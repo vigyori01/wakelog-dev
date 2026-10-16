@@ -135,6 +135,53 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
 .comp-body p{margin:0;color:var(--muted)}
 .comp-in{height:60px;font-size:22px;font-weight:600}
 
+/* debrief / start timer */
+.btn-sec{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:17px;color:var(--ink);cursor:pointer;text-align:center}
+.btn-sec.danger{color:var(--accent)}
+.db-intro{margin:0;color:var(--muted);font-size:15px}
+.db-list{display:flex;flex-direction:column;gap:8px;margin-block:14px}
+.db-item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.db-item-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.db-name{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;line-height:1.4;overflow-wrap:anywhere;min-width:0}
+.db-state{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.db-state b{color:var(--ink)}
+.db-state.ok b{color:var(--sea)}
+.db-state.err{color:var(--accent)}
+.db-row{display:flex;gap:8px}
+.db-row .btn-sec{min-height:44px;font-size:15px}
+.db-actions{display:flex;flex-direction:column;gap:10px;padding-bottom:30px}
+.db-empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:18px;color:var(--muted);font-size:15px}
+.db-stage{position:relative;margin:0 auto;background:#000;border-radius:10px;overflow:hidden;max-width:100%}
+.db-stage video{display:block;width:100%;height:100%}
+.db-timer{position:absolute;font-family:var(--f-display);font-weight:700;line-height:1;border-radius:.18em;padding:.12em .28em;font-variant-numeric:tabular-nums;background:rgba(0,0,0,.62);color:#fff;pointer-events:none}
+.db-timer.after{background:#1FCB7A;color:#06210F}
+.db-time{display:flex;justify-content:space-between;align-items:baseline;font-variant-numeric:tabular-nums;padding-top:10px;font-weight:600}
+.db-time span:last-child{color:var(--muted);font-weight:500}
+.db-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.db-steps button{height:48px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px;padding:0 2px}
+.db-steps #db-play{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.db-sync-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.db-watch{height:56px;font-family:var(--f-display);font-size:30px;font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.db-sync-row .addbtn{height:56px;background:var(--accent);color:var(--accent-ink)}
+.db-err{color:var(--accent);font-size:14px;font-weight:600}
+.db-gun{margin-top:14px;padding:12px;border-radius:12px;background:var(--sea-soft);display:flex;flex-direction:column;gap:10px}
+.db-gun b{display:block;font-size:17px;color:var(--sea)}
+.db-gun span{font-size:14px;color:var(--muted)}
+.db-nudge{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px}
+.db-nudge button{height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.db-seg .chip{flex:1}
+#db-done{margin-block:18px 30px}
+.bn{padding-block:24px 30px;display:flex;flex-direction:column;gap:12px}
+.bn-name{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;overflow-wrap:anywhere}
+.bar{height:14px;border-radius:7px;background:var(--sea-soft);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:7px;transition:width .3s linear}
+.bar.thin{height:8px}
+.bar.thin i{background:var(--sea)}
+.bn-meta{font-family:var(--f-display);font-weight:700;font-size:30px;font-variant-numeric:tabular-nums;line-height:1}
+.bn-meta small{font-family:var(--f-body);font-weight:500;font-size:15px;color:var(--muted);margin-left:6px}
+.bn-overall{font-weight:600;padding-top:8px}
+.bn-note{margin:0;font-size:14px;color:var(--muted)}
+
 .toast{position:absolute;left:50%;bottom:calc(20px + var(--pb,env(safe-area-inset-bottom,0px)));transform:translateX(-50%);z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;width:max-content;max-width:calc(100% - 32px);overflow-wrap:anywhere;font-size:14px}
 @media (prefers-reduced-motion: no-preference){.cap,.chip,.pick,.save{transition:transform .08s,background-color .12s}}
 </style>
@@ -186,6 +233,12 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
     <section class="card" aria-labelledby="cond-title">
       <div class="card-head"><div class="card-title" id="cond-title">Conditions<small>used for every shot</small></div></div>
       <div class="cond" id="cond-home"></div>
+    </section>
+
+    <section class="card" aria-labelledby="db-card-title">
+      <div class="card-head"><div class="card-title" id="db-card-title">Debrief</div></div>
+      <p class="db-intro">Burn a start timer into start videos, synced to the watch you filmed at the start of the clip.</p>
+      <label class="btn-sec"><input class="file" type="file" id="db-add-home" accept="video/*" multiple>Add start timer</label>
     </section>
 
     <p class="foot">Everything stays on this phone. After each shot, Save opens the share sheet: choose “Save to Files” and pick your sailing folder.</p>
@@ -255,6 +308,72 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
     <input class="text-in comp-in" id="comp-input" type="text" placeholder="e.g. Balaton Cup" aria-label="Competition name" autocapitalize="words" maxlength="40" enterkeyhint="go">
     <button class="save" id="comp-go" type="submit">Record race video</button>
   </form>
+</section>
+
+<!-- ================= DEBRIEF: START TIMER ================= -->
+<section class="layer scroller" id="db" hidden role="dialog" aria-modal="true" aria-labelledby="db-title">
+  <div class="sheet-head"><div class="wrap">
+    <button class="link" id="db-close" type="button">Close</button>
+    <div class="sheet-title" id="db-title">Start timer</div>
+    <span style="min-width:72px"></span>
+  </div></div>
+  <div class="wrap">
+    <div id="db-listview">
+      <p class="db-intro">Sync each video to your watch, then burn the timer in. Originals are never changed.</p>
+      <div class="db-list" id="db-list"></div>
+      <div class="db-actions">
+        <button class="save" id="db-burn" type="button">Burn timer</button>
+        <button class="btn-sec" id="db-saveall" type="button" hidden>Save all to Files</button>
+        <label class="btn-sec"><input class="file" type="file" id="db-add" accept="video/*" multiple>Add videos</label>
+      </div>
+    </div>
+
+    <div id="db-syncview" hidden>
+      <div class="db-stage" id="db-stage"><video id="db-vid" playsinline muted preload="auto"></video><div class="db-timer" id="db-timer" hidden></div></div>
+      <div class="db-time"><span id="db-cur">0:00.0</span><span id="db-dur"></span></div>
+      <input type="range" id="db-scrub" min="0" max="1" step="0.01" value="0" aria-label="Position in video">
+      <div class="db-steps">
+        <button type="button" data-step="-1" aria-label="Back 1 second">−1 s</button>
+        <button type="button" data-step="-0.0334" aria-label="Back 1 frame">−1 f</button>
+        <button type="button" id="db-play">Play</button>
+        <button type="button" data-step="0.0334" aria-label="Forward 1 frame">+1 f</button>
+        <button type="button" data-step="1" aria-label="Forward 1 second">+1 s</button>
+      </div>
+      <div class="sec">
+        <div class="lbl">At this frame your watch shows</div>
+        <div class="chips db-seg" id="db-seg">
+          <button class="chip" type="button" data-v="before" aria-pressed="true">Time to start</button>
+          <button class="chip" type="button" data-v="after" aria-pressed="false">Time after start</button>
+        </div>
+        <div class="db-sync-row">
+          <input class="text-in db-watch" id="db-watch" type="text" inputmode="numeric" autocomplete="off" placeholder="2:47" aria-label="Time on your watch, minutes and seconds" maxlength="6">
+          <button class="addbtn" id="db-dosync" type="button">Sync here</button>
+        </div>
+        <div class="db-err" id="db-err" hidden></div>
+      </div>
+      <div class="db-gun" id="db-gun" hidden>
+        <div><b id="db-gun-at"></b><span>Jump to the gun and check the timer reads 0:00. Nudge it if your watch was a bit off.</span></div>
+        <div class="db-nudge">
+          <button type="button" id="db-jump">Jump to gun</button>
+          <button type="button" data-nudge="-0.1">−0.1 s</button>
+          <button type="button" data-nudge="0.1">+0.1 s</button>
+        </div>
+      </div>
+      <button class="save" id="db-done" type="button">Done</button>
+    </div>
+
+    <div id="db-burnview" class="bn" hidden>
+      <div class="lbl">Burning</div>
+      <div class="bn-name" id="bn-name"></div>
+      <div class="bar"><i id="bn-bar"></i></div>
+      <div class="bn-meta" id="bn-meta">0%</div>
+      <div class="bn-overall" id="bn-overall"></div>
+      <div class="bar thin"><i id="bn-obar"></i></div>
+      <p class="bn-note" id="bn-note">Keep Wake Log open with the screen on. Switching apps or locking the phone pauses the burn.</p>
+      <button class="save" id="bn-resume" type="button" hidden>Tap to continue</button>
+      <button class="btn-sec danger" id="bn-cancel" type="button">Cancel</button>
+    </div>
+  </div>
 </section>
 
 <div class="toast" id="toast" hidden role="status"></div>
@@ -591,6 +710,328 @@ $("#save").addEventListener("click", async () => {
 
 let toastT;
 function toast(msg){ const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+
+/* =====================================================================
+   DEBRIEF: burn a start timer into videos, synced to the coach's watch
+   ===================================================================== */
+const db = { clips: [], cur: null, side: "before", running: false, cancel: null };
+const fmtClock = s => { s = Math.max(0, s); return Math.floor(s / 60) + ":" + pad(Math.floor(s % 60)); };
+const fmtPos = s => { s = Math.max(0, s || 0); return Math.floor(s / 60) + ":" + pad(Math.floor(s % 60)) + "." + Math.floor((s * 10) % 10); };
+// Timer text at video time t (seconds) for a gun at `gun`: whole seconds, counting down then up.
+function timerText(t, gun){
+  const d = t - gun;
+  if (d < 0) return "−" + fmtClock(Math.ceil(-d - 1e-6));
+  const up = Math.floor(d + 1e-6);
+  return up === 0 ? "0:00" : "+" + fmtClock(up);
+}
+function parseWatch(str){
+  const s = String(str || "").trim().replace(",", ".").replace(".", ":");
+  if (!s) return null;
+  let m, sec;
+  if (s.includes(":")) { const [a, b] = s.split(":"); if (!/^\d{0,3}$/.test(a) || !/^\d{1,2}$/.test(b)) return null; m = +(a || 0); sec = +b; }
+  else { if (!/^\d{1,5}$/.test(s)) return null; sec = +s.slice(-2); m = s.length > 2 ? +s.slice(0, -2) : 0; }
+  if (sec > 59) return null;
+  return m * 60 + sec;
+}
+function loadMeta(url){
+  return new Promise(res => {
+    const v = document.createElement("video"); v.preload = "metadata"; v.muted = true; v.playsInline = true;
+    const done = d => { v.removeAttribute("src"); v.load(); res(d); };
+    v.onloadedmetadata = () => done(isFinite(v.duration) ? v.duration : null);
+    v.onerror = () => done(null);
+    setTimeout(() => done(null), 8000);
+    v.src = url;
+  });
+}
+async function addClips(files){
+  const list = [...(files || [])].filter(f => f && (f.type.startsWith("video/") || /\.(mov|mp4|m4v|webm)$/i.test(f.name)));
+  if (!list.length) return;
+  for (const f of list) {
+    const c = { id: newId(), file: f, name: f.name, url: URL.createObjectURL(f), duration: null, gun: null, out: null, outName: "", state: "new", err: "" };
+    db.clips.push(c);
+    c.duration = await loadMeta(c.url);
+  }
+  showDb("list");
+}
+function showDb(view){
+  $("#db").hidden = false;
+  $("#db-listview").hidden = view !== "list";
+  $("#db-syncview").hidden = view !== "sync";
+  $("#db-burnview").hidden = view !== "burn";
+  $("#db-close").hidden = view === "burn";
+  if (view !== "sync") { const v = $("#db-vid"); v.pause(); }
+  if (view === "list") { $("#db-title").textContent = "Start timer"; renderDbList(); }
+  $("#db").scrollTop = 0;
+}
+function renderDbList(){
+  const el = $("#db-list");
+  if (!db.clips.length) { el.innerHTML = `<div class="db-empty">Add your start videos. For each one you’ll scrub to the moment your watch is readable and type what it shows.</div>`; }
+  else el.innerHTML = db.clips.map(c => {
+    let st;
+    if (c.state === "done") st = `<div class="db-state ok"><b>Timer burned</b> · ready to save as ${esc(c.outName)}</div>`;
+    else if (c.state === "error") st = `<div class="db-state err">${esc(c.err)}</div>`;
+    else if (c.gun != null) st = `<div class="db-state"><b>Synced</b> · gun at ${fmtPos(c.gun)} in the video</div>`;
+    else st = `<div class="db-state">Not synced yet${c.duration ? " · " + fmtClock(c.duration) + " long" : ""}</div>`;
+    const btns = c.state === "done"
+      ? `<button class="btn-sec" type="button" data-save="${c.id}">Save to Files</button><button class="btn-sec" type="button" data-sync="${c.id}">Edit sync</button>`
+      : `<button class="btn-sec" type="button" data-sync="${c.id}">${c.gun != null ? "Edit sync" : "Sync to watch"}</button>`;
+    return `<div class="db-item"><div class="db-item-top"><div class="db-name">${esc(c.name)}</div><button class="x" type="button" data-del="${c.id}" aria-label="Remove ${esc(c.name)}">×</button></div>${st}<div class="db-row">${btns}</div></div>`;
+  }).join("");
+  const toBurn = db.clips.filter(c => c.gun != null && c.state !== "done").length;
+  const ready = db.clips.filter(c => c.state === "done").length;
+  $("#db-burn").hidden = !toBurn;
+  $("#db-burn").textContent = toBurn > 1 ? `Burn all (${toBurn})` : "Burn timer";
+  $("#db-saveall").hidden = ready < 2;
+  $("#db-saveall").textContent = `Save all to Files (${ready})`;
+}
+function bindAdd(input){ input.addEventListener("change", () => { const fs = input.files; addClips(fs).finally(() => { input.value = ""; }); }); }
+bindAdd($("#db-add-home")); bindAdd($("#db-add"));
+$("#db-close").addEventListener("click", () => { $("#db").hidden = true; });
+$("#db-list").addEventListener("click", e => {
+  const s = e.target.closest("[data-sync]"), d = e.target.closest("[data-del]"), sv = e.target.closest("[data-save]");
+  if (s) openSync(db.clips.find(c => c.id === s.dataset.sync));
+  else if (sv) { const c = db.clips.find(x => x.id === sv.dataset.save); if (c) shareFiles([new File([c.out], c.outName, { type: c.out.type })]); }
+  else if (d) { const c = db.clips.find(x => x.id === d.dataset.del); if (c) URL.revokeObjectURL(c.url); db.clips = db.clips.filter(x => x.id !== d.dataset.del); renderDbList(); }
+});
+$("#db-saveall").addEventListener("click", () => {
+  const files = db.clips.filter(c => c.state === "done").map(c => new File([c.out], c.outName, { type: c.out.type }));
+  shareFiles(files);
+});
+async function shareFiles(files){
+  if (navigator.canShare && navigator.canShare({ files })) {
+    try { await navigator.share({ files }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  files.forEach(f => { const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000); });
+}
+
+/* ---- sync editor ---- */
+const vid = $("#db-vid");
+function layoutStage(){
+  const st = $("#db-stage"); if (!vid.videoWidth) return;
+  const ar = vid.videoWidth / vid.videoHeight, avail = st.parentElement.clientWidth;
+  const maxH = Math.max(200, Math.min(window.innerHeight, window.innerWidth) * 0.5);
+  const w = Math.min(avail, maxH * ar); st.style.width = w + "px"; st.style.height = (w / ar) + "px";
+  const short = Math.min(w, w / ar), t = $("#db-timer");
+  t.style.fontSize = (short * 0.075) + "px"; t.style.top = t.style.right = (short * 0.035) + "px";
+}
+function drawPreview(){
+  const c = db.cur; if (!c) return;
+  $("#db-cur").textContent = fmtPos(vid.currentTime);
+  if (!scrubbing) $("#db-scrub").value = vid.currentTime;
+  const t = $("#db-timer");
+  t.hidden = c.gun == null;
+  if (c.gun != null) { t.textContent = timerText(vid.currentTime, c.gun); t.classList.toggle("after", vid.currentTime >= c.gun); }
+}
+let scrubbing = false, rafId = 0;
+function tick(){ drawPreview(); if (!vid.paused) rafId = requestAnimationFrame(tick); }
+function openSync(c){
+  if (!c) return;
+  db.cur = c; $("#db-title").textContent = "Watch sync";
+  $("#db-err").hidden = true; $("#db-watch").value = "";
+  vid.src = c.url; vid.currentTime = 0;
+  vid.onloadedmetadata = () => { c.duration = vid.duration; $("#db-scrub").max = vid.duration; $("#db-dur").textContent = "/ " + fmtPos(vid.duration); layoutStage(); drawPreview(); };
+  renderGun(); showDb("sync");
+}
+vid.addEventListener("timeupdate", drawPreview);
+vid.addEventListener("seeked", drawPreview);
+vid.addEventListener("play", () => { $("#db-play").textContent = "Pause"; cancelAnimationFrame(rafId); tick(); });
+vid.addEventListener("pause", () => { $("#db-play").textContent = "Play"; drawPreview(); });
+window.addEventListener("resize", layoutStage);
+$("#db-play").addEventListener("click", () => { if (vid.paused) vid.play().catch(() => {}); else vid.pause(); });
+document.querySelectorAll(".db-steps [data-step]").forEach(b => b.addEventListener("click", () => {
+  vid.pause(); vid.currentTime = Math.max(0, Math.min(vid.duration || 0, vid.currentTime + +b.dataset.step));
+}));
+$("#db-scrub").addEventListener("input", e => { scrubbing = true; vid.pause(); vid.currentTime = +e.target.value; $("#db-cur").textContent = fmtPos(+e.target.value); });
+$("#db-scrub").addEventListener("change", () => { scrubbing = false; });
+$("#db-seg").addEventListener("click", e => {
+  const b = e.target.closest("[data-v]"); if (!b) return; db.side = b.dataset.v;
+  $("#db-seg").querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+});
+$("#db-dosync").addEventListener("click", () => {
+  const secs = parseWatch($("#db-watch").value), err = $("#db-err");
+  if (secs == null) { err.textContent = "Type the watch time as minutes and seconds, e.g. 2:47 or 247."; err.hidden = false; return; }
+  err.hidden = true;
+  const c = db.cur; c.gun = vid.currentTime + (db.side === "before" ? secs : -secs);
+  if (c.state === "done") { c.state = "new"; c.out = null; }
+  $("#db-watch").blur(); renderGun(); drawPreview();
+});
+function renderGun(){
+  const c = db.cur, box = $("#db-gun");
+  box.hidden = !c || c.gun == null; if (box.hidden) return;
+  const outside = c.duration && (c.gun < 0 || c.gun > c.duration);
+  $("#db-gun-at").textContent = outside
+    ? `Gun is ${c.gun < 0 ? "before the video starts" : "after the video ends"} (${c.gun < 0 ? "−" : ""}${fmtPos(Math.abs(c.gun))})`
+    : `Gun at ${fmtPos(c.gun)} in the video`;
+  $("#db-jump").disabled = outside;
+}
+$("#db-jump").addEventListener("click", () => { vid.pause(); vid.currentTime = Math.max(0, db.cur.gun); });
+document.querySelectorAll("[data-nudge]").forEach(b => b.addEventListener("click", () => {
+  const c = db.cur; if (c.gun == null) return;
+  c.gun = Math.round((c.gun + +b.dataset.nudge) * 1000) / 1000;
+  if (c.state === "done") { c.state = "new"; c.out = null; }
+  renderGun(); vid.pause(); vid.currentTime = Math.max(0, c.gun); drawPreview();
+}));
+$("#db-done").addEventListener("click", () => { db.cur = null; showDb("list"); });
+
+/* ---- burning ---- */
+let bVid = null, aCtx = null, aDest = null, wakeLock = null;
+function pickMime(){
+  if (!window.MediaRecorder) return null;
+  const opts = ["video/mp4;codecs=avc1.640028,mp4a.40.2", "video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
+  return opts.find(m => { try { return MediaRecorder.isTypeSupported(m); } catch { return false; } }) || "";
+}
+function ensureBurner(){
+  if (bVid) return;
+  bVid = document.createElement("video");
+  bVid.playsInline = true; bVid.setAttribute("playsinline", ""); bVid.preload = "auto";
+  bVid.style.cssText = "position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none";
+  document.body.appendChild(bVid);
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    aCtx = new AC(); const src = aCtx.createMediaElementSource(bVid);
+    aDest = aCtx.createMediaStreamDestination(); src.connect(aDest);   // not connected to the speakers: burning is silent
+  } catch { aCtx = null; aDest = null; }
+}
+function roundRect(g, x, y, w, h, r){ g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function drawTimer(g, W, H, t, gun){
+  const short = Math.min(W, H), size = Math.round(short * 0.075), m = Math.round(short * 0.035);
+  const txt = timerText(t, gun), after = t >= gun;
+  g.font = `700 ${size}px "Barlow Condensed","Arial Narrow",Arial,sans-serif`;
+  g.textBaseline = "alphabetic";
+  const tw = g.measureText(txt).width, px = size * 0.28, py = size * 0.14;
+  const bw = tw + px * 2, bh = size * 1.0 + py * 2, x = W - m - bw, y = m;
+  roundRect(g, x, y, bw, bh, size * 0.18);
+  g.fillStyle = after ? "#1FCB7A" : "rgba(0,0,0,0.62)"; g.fill();
+  g.fillStyle = after ? "#06210F" : "#FFFFFF";
+  g.fillText(txt, x + px, y + py + size * 0.86);
+}
+function waitEvt(el, ev, ms){ return new Promise(res => { let t; const f = () => { clearTimeout(t); el.removeEventListener(ev, f); res(true); }; el.addEventListener(ev, f); if (ms) t = setTimeout(() => { el.removeEventListener(ev, f); res(false); }, ms); }); }
+let resumeWaiter = null;
+function needTap(text){
+  return new Promise(res => {
+    const b = $("#bn-resume"); b.textContent = text; b.hidden = false;
+    resumeWaiter = () => { b.hidden = true; resumeWaiter = null; res(); };
+  });
+}
+async function playBurner(){
+  for (;;) {
+    try { await bVid.play(); return; }
+    catch (e) { await needTap("Tap to continue burning"); }
+  }
+}
+$("#bn-resume").addEventListener("click", () => {
+  if (aCtx && aCtx.state !== "running") aCtx.resume().catch(() => {});
+  bVid && bVid.play().catch(() => {});
+  if (resumeWaiter) resumeWaiter();
+});
+
+function burnClip(c, onProg, ctl){
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (bVid.src !== c.url) { bVid.src = c.url; }
+      if (bVid.readyState < 1) await waitEvt(bVid, "loadedmetadata", 15000);
+      const W0 = bVid.videoWidth, H0 = bVid.videoHeight, dur = bVid.duration;
+      if (!W0 || !isFinite(dur)) throw new Error("This video can’t be read on this device.");
+      const sc = Math.min(1, 1920 / Math.max(W0, H0));
+      const W = Math.round(W0 * sc / 2) * 2, H = Math.round(H0 * sc / 2) * 2;
+      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+      const g = cv.getContext("2d");
+      bVid.pause();
+      if (bVid.currentTime > 0.01) { bVid.currentTime = 0; await waitEvt(bVid, "seeked", 5000); }
+      const draw = () => { g.drawImage(bVid, 0, 0, W, H); drawTimer(g, W, H, bVid.currentTime, c.gun); };
+      draw();
+      const stream = cv.captureStream(30);
+      const tracks = [...stream.getVideoTracks()];
+      if (aDest) tracks.push(...aDest.stream.getAudioTracks());
+      const mime = pickMime();
+      const rec = new MediaRecorder(new MediaStream(tracks), Object.assign({ videoBitsPerSecond: 8000000, audioBitsPerSecond: 128000 }, mime ? { mimeType: mime } : {}));
+      const chunks = [];
+      rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+      let finished = false;
+      const stopped = new Promise(r => rec.onstop = r);
+      const loop = () => {
+        if (finished) return;
+        draw(); onProg(bVid.currentTime, dur);
+        if (bVid.requestVideoFrameCallback) bVid.requestVideoFrameCallback(loop); else requestAnimationFrame(loop);
+      };
+      const onHide = () => {
+        if (document.hidden && !finished && !bVid.paused) {
+          bVid.pause(); try { rec.pause(); } catch {}
+          needTap("Tap to continue burning").then(() => { try { rec.resume(); } catch {} ; playBurner(); });
+        }
+      };
+      document.addEventListener("visibilitychange", onHide);
+      ctl.cancel = () => { finished = true; bVid.pause(); try { rec.stop(); } catch {} ; document.removeEventListener("visibilitychange", onHide); reject(new Error("cancelled")); };
+      rec.start(1000);
+      await playBurner();
+      loop();
+      await waitEvt(bVid, "ended");
+      if (finished) return;
+      finished = true; draw(); onProg(dur, dur);
+      document.removeEventListener("visibilitychange", onHide);
+      await new Promise(r => setTimeout(r, 300));
+      rec.stop(); await stopped;
+      const type = (rec.mimeType || mime || "video/mp4").split(";")[0];
+      resolve(new Blob(chunks, { type }));
+    } catch (e) { reject(e); }
+  });
+}
+
+$("#db-burn").addEventListener("click", () => {
+  const queue = db.clips.filter(c => c.gun != null && c.state !== "done");
+  if (!queue.length || db.running) return;
+  if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { toast("This browser can’t burn videos. Update iOS, or use Safari or Chrome on a laptop."); return; }
+  // Unlock audio + playback inside this tap (iOS only allows it from a tap).
+  ensureBurner();
+  if (aCtx) aCtx.resume().catch(() => {});
+  bVid.src = queue[0].url;
+  bVid.play().then(() => bVid.pause()).catch(() => {});
+  runBurn(queue);
+});
+async function runBurn(queue){
+  db.running = true; showDb("burn");
+  try { if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request("screen"); } catch {}
+  const total = queue.reduce((s, c) => s + (c.duration || 0), 0) || 1;
+  let doneSecs = 0, cancelled = false;
+  const ctl = {};
+  db.cancel = () => { cancelled = true; ctl.cancel && ctl.cancel(); };
+  for (let i = 0; i < queue.length && !cancelled; i++) {
+    const c = queue[i];
+    $("#bn-name").textContent = c.name;
+    $("#bn-overall").textContent = queue.length > 1 ? `Clip ${i + 1} of ${queue.length}` : "";
+    $("#bn-obar").parentElement.hidden = queue.length < 2;
+    c.state = "burning";
+    const prog = (t, d) => {
+      const p = d ? Math.min(1, t / d) : 0;
+      $("#bn-bar").style.width = (p * 100).toFixed(1) + "%";
+      const left = (d - t) + queue.slice(i + 1).reduce((s, x) => s + (x.duration || 0), 0);
+      const mins = Math.ceil(left / 60);
+      $("#bn-meta").innerHTML = `${Math.floor(p * 100)}%<small>${left < 60 ? "under a minute left" : `about ${mins} min left`}</small>`;
+      $("#bn-obar").style.width = (Math.min(1, (doneSecs + t) / total) * 100).toFixed(1) + "%";
+    };
+    prog(0, c.duration || 1);
+    try {
+      const blob = await burnClip(c, prog, ctl);
+      const ext = blob.type.includes("webm") ? "webm" : "mp4";
+      c.out = blob; c.outName = c.name.replace(/\.[^.]+$/, "") + "_timer." + ext; c.state = "done";
+    } catch (e) {
+      if (e && e.message === "cancelled") { c.state = "new"; break; }
+      c.state = "error"; c.err = (e && e.message) || "Burning failed. Try again.";
+    }
+    doneSecs += c.duration || 0;
+  }
+  try { wakeLock && await wakeLock.release(); } catch {} wakeLock = null;
+  $("#bn-resume").hidden = true; resumeWaiter = null;
+  db.running = false; db.cancel = null;
+  showDb("list");
+  const n = db.clips.filter(c => c.state === "done").length;
+  if (cancelled) toast(n ? "Cancelled. Finished clips are ready to save." : "Cancelled");
+  else toast(n ? "Done. Tap Save to Files for each clip." : "Nothing was burned");
+}
+$("#bn-cancel").addEventListener("click", () => { if (db.cancel) db.cancel(); if (resumeWaiter) resumeWaiter(); });
+document.addEventListener("visibilitychange", async () => {
+  if (!document.hidden && db.running && navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request("screen"); } catch {} }
+});
 
 syncCond(); renderHome();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
