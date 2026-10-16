@@ -169,7 +169,11 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
 .db-gun span{font-size:14px;color:var(--muted)}
 .db-nudge{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px}
 .db-nudge button{height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:600}
-.db-seg .chip{flex:1}
+.db-seg .chip{flex:1 1 calc(33% - 6px);padding:6px 6px;font-size:15px;line-height:1.15;white-space:normal}
+.db-steps2{display:grid;grid-template-columns:1fr 1.4fr;gap:6px;margin-top:6px}
+.db-steps2 button{height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px}
+#db-sound[aria-pressed="false"]{color:var(--muted)}
+.db-watch:disabled{opacity:.45}
 #db-done{margin-block:18px 30px}
 .bn{padding-block:24px 30px;display:flex;flex-direction:column;gap:12px}
 .bn-name{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;overflow-wrap:anywhere}
@@ -329,7 +333,7 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
     </div>
 
     <div id="db-syncview" hidden>
-      <div class="db-stage" id="db-stage"><video id="db-vid" playsinline muted preload="auto"></video><div class="db-timer" id="db-timer" hidden></div></div>
+      <div class="db-stage" id="db-stage"><video id="db-vid" playsinline preload="auto"></video><div class="db-timer" id="db-timer" hidden></div></div>
       <div class="db-time"><span id="db-cur">0:00.0</span><span id="db-dur"></span></div>
       <input type="range" id="db-scrub" min="0" max="1" step="0.01" value="0" aria-label="Position in video">
       <div class="db-steps">
@@ -339,11 +343,16 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
         <button type="button" data-step="0.0334" aria-label="Forward 1 frame">+1 f</button>
         <button type="button" data-step="1" aria-label="Forward 1 second">+1 s</button>
       </div>
+      <div class="db-steps2">
+        <button type="button" id="db-sound" aria-pressed="true">Sound on</button>
+        <button type="button" id="db-replay">Replay last 2 s</button>
+      </div>
       <div class="sec">
-        <div class="lbl">At this frame your watch shows</div>
+        <div class="lbl" id="db-sync-lbl">At this frame your watch shows</div>
         <div class="chips db-seg" id="db-seg">
           <button class="chip" type="button" data-v="before" aria-pressed="true">Time to start</button>
           <button class="chip" type="button" data-v="after" aria-pressed="false">Time after start</button>
+          <button class="chip" type="button" data-v="gun" aria-pressed="false">Start signal heard here</button>
         </div>
         <div class="db-sync-row">
           <input class="text-in db-watch" id="db-watch" type="text" inputmode="numeric" autocomplete="off" placeholder="2:47" aria-label="Time on your watch, minutes and seconds" maxlength="6">
@@ -822,12 +831,23 @@ function drawPreview(){
   t.hidden = c.gun == null;
   if (c.gun != null) { t.textContent = timerText(vid.currentTime, c.gun); t.classList.toggle("after", vid.currentTime >= c.gun); }
 }
-let scrubbing = false, rafId = 0;
-function tick(){ drawPreview(); if (!vid.paused) rafId = requestAnimationFrame(tick); }
+let scrubbing = false, rafId = 0, replayEnd = null, soundOn = true;
+function tick(){
+  if (replayEnd != null && vid.currentTime >= replayEnd) { const e = replayEnd; replayEnd = null; vid.pause(); vid.currentTime = e; }
+  drawPreview(); if (!vid.paused) rafId = requestAnimationFrame(tick);
+}
+function setSound(on){ soundOn = on; vid.muted = !on; const b = $("#db-sound"); b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "Sound on" : "Sound off"; }
+$("#db-sound").addEventListener("click", () => setSound(!soundOn));
+$("#db-replay").addEventListener("click", () => {
+  const end = replayEnd != null ? replayEnd : vid.currentTime;
+  replayEnd = end; vid.currentTime = Math.max(0, end - 2);
+  vid.play().catch(() => { replayEnd = null; });
+});
 function openSync(c){
   if (!c) return;
   db.cur = c; $("#db-title").textContent = "Watch sync";
-  $("#db-err").hidden = true; $("#db-watch").value = "";
+  $("#db-err").hidden = true; $("#db-watch").value = ""; replayEnd = null;
+  vid.muted = !soundOn; applySide();
   vid.src = c.url; vid.currentTime = 0;
   vid.onloadedmetadata = () => { c.duration = vid.duration; $("#db-scrub").max = vid.duration; $("#db-dur").textContent = "/ " + fmtPos(vid.duration); layoutStage(); drawPreview(); };
   renderGun(); showDb("sync");
@@ -837,18 +857,26 @@ vid.addEventListener("seeked", drawPreview);
 vid.addEventListener("play", () => { $("#db-play").textContent = "Pause"; cancelAnimationFrame(rafId); tick(); });
 vid.addEventListener("pause", () => { $("#db-play").textContent = "Play"; drawPreview(); });
 window.addEventListener("resize", layoutStage);
-$("#db-play").addEventListener("click", () => { if (vid.paused) vid.play().catch(() => {}); else vid.pause(); });
+$("#db-play").addEventListener("click", () => { replayEnd = null; if (vid.paused) vid.play().catch(() => {}); else vid.pause(); });
 document.querySelectorAll(".db-steps [data-step]").forEach(b => b.addEventListener("click", () => {
-  vid.pause(); vid.currentTime = Math.max(0, Math.min(vid.duration || 0, vid.currentTime + +b.dataset.step));
+  replayEnd = null; vid.pause(); vid.currentTime = Math.max(0, Math.min(vid.duration || 0, vid.currentTime + +b.dataset.step));
 }));
-$("#db-scrub").addEventListener("input", e => { scrubbing = true; vid.pause(); vid.currentTime = +e.target.value; $("#db-cur").textContent = fmtPos(+e.target.value); });
+$("#db-scrub").addEventListener("input", e => { scrubbing = true; replayEnd = null; vid.pause(); vid.currentTime = +e.target.value; $("#db-cur").textContent = fmtPos(+e.target.value); });
 $("#db-scrub").addEventListener("change", () => { scrubbing = false; });
 $("#db-seg").addEventListener("click", e => {
   const b = e.target.closest("[data-v]"); if (!b) return; db.side = b.dataset.v;
   $("#db-seg").querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  applySide();
 });
+function applySide(){
+  const gun = db.side === "gun", w = $("#db-watch");
+  w.disabled = gun; if (gun) w.value = "";
+  w.placeholder = gun ? "0:00" : "2:47";
+  $("#db-sync-lbl").textContent = gun ? "The start signal is at this frame" : "At this frame your watch shows";
+  $("#db-err").hidden = true;
+}
 $("#db-dosync").addEventListener("click", () => {
-  const secs = parseWatch($("#db-watch").value), err = $("#db-err");
+  const secs = db.side === "gun" ? 0 : parseWatch($("#db-watch").value), err = $("#db-err");
   if (secs == null) { err.textContent = "Type the watch time as minutes and seconds, e.g. 2:47 or 247."; err.hidden = false; return; }
   err.hidden = true;
   const c = db.cur; c.gun = vid.currentTime + (db.side === "before" ? secs : -secs);
