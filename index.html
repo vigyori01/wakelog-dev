@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Wake Log</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -27,6 +27,9 @@
   --accent:#FF6630; --accent-ink:#1A0A03; --sea:#5DB8D0; --sea-soft:#14303A; --race:#1D5A70; --race-ink:#EAF6FA; color-scheme:dark}}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+/* app-like taps: no double-tap zoom, no text selection on controls */
+html,body,button,label,input,.chip,.pick,.cap{touch-action:manipulation}
+button,label,.chip,.pick,.cap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 body{color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 button,input{font:inherit;color:inherit}
@@ -1060,6 +1063,9 @@ $("#bn-cancel").addEventListener("click", () => { if (db.cancel) db.cancel(); if
 document.addEventListener("visibilitychange", async () => {
   if (!document.hidden && db.running && navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request("screen"); } catch {} }
 });
+
+// Block pinch and double-tap zoom (iOS ignores user-scalable=no in some cases).
+["gesturestart","gesturechange"].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
 
 syncCond(); renderHome();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
