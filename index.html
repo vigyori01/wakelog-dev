@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Wake Log</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Wake Log">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#EAF0F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#081216" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one-column phone tool locked to portrait. Home = capture buttons + session setup (crew, conditions); capture opens a sheet ending in "Save to Files". */
+:root{
+  --bg:#EAF0F2; --surface:#FFFFFF; --ink:#0D1D25; --muted:#56686F; --line:#D0DADE;
+  --accent:#E4521C; --accent-ink:#FFFFFF; --sea:#0E5A70; --sea-soft:#D6E7EC; --race:#123E4F; --race-ink:#FFFFFF;
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#081216; --surface:#10202A; --ink:#E3EDF0; --muted:#8FA2AA; --line:#21343E;
+  --accent:#FF6630; --accent-ink:#1A0A03; --sea:#5DB8D0; --sea-soft:#14303A; --race:#1D5A70; --race-ink:#EAF6FA; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sea);outline-offset:2px}
+
+/* The app frame. In landscape on a phone, script rotates it so the UI stays upright relative to the phone. */
+#app{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;background:var(--bg);transform-origin:top left}
+.scroller{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding-top:var(--pt,env(safe-area-inset-top,0px));padding-bottom:var(--pb,env(safe-area-inset-bottom,0px))}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,var(--pl,env(safe-area-inset-left,0px)));padding-right:max(16px,var(--pr,env(safe-area-inset-right,0px)))}
+.file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
+.top .wrap{display:flex;align-items:center;gap:8px;padding-block:14px 4px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:28px;letter-spacing:.02em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.brand svg{width:30px;height:30px;color:var(--accent)}
+
+.capture{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-block:12px 0}
+.cap{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:128px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);user-select:none;-webkit-user-select:none;min-width:0}
+.cap.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.cap.race{grid-column:1 / -1;min-height:0;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;background:var(--race);color:var(--race-ink);border-color:transparent}
+.cap svg{width:32px;height:32px;flex:none}
+.cap b{display:block;font-family:var(--f-display);font-size:28px;line-height:1;text-transform:uppercase;letter-spacing:.02em}
+.cap span{font-size:14px;opacity:.85;overflow-wrap:anywhere}
+.cap:active{transform:scale(.98)}
+.cap:focus-within{outline:3px solid var(--sea);outline-offset:2px}
+.cap.off{opacity:.45;pointer-events:none}
+.comp-line{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;color:var(--muted);padding-top:8px}
+.comp-line b{color:var(--ink);font-weight:600;overflow-wrap:anywhere}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card-title{font-family:var(--f-display);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.03em}
+.card-title small{display:inline-block;white-space:nowrap;font-family:var(--f-body);font-weight:500;font-size:14px;color:var(--muted);text-transform:none;letter-spacing:0;margin-left:6px}
+.crew-list{display:flex;flex-wrap:wrap;gap:8px}
+.sailor{display:inline-flex;align-items:center;gap:4px;padding:4px 4px 4px 12px;border-radius:10px;background:var(--sea-soft);max-width:100%}
+.sailor b{font-weight:600;overflow-wrap:anywhere}
+.x{width:34px;height:34px;border-radius:8px;border:0;background:transparent;color:var(--muted);font-size:22px;line-height:1;flex:none}
+.crew-empty{font-size:14px;color:var(--muted)}
+.crew-add{display:grid;grid-template-columns:1fr auto;gap:8px}
+.text-in{height:46px;min-width:0;width:100%;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:0 12px}
+.addbtn{height:46px;padding:0 18px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);font-weight:600}
+.small-link{white-space:nowrap;background:none;border:0;color:var(--muted);font-size:14px;font-weight:600;padding:6px 2px}
+.small-link.sea{color:var(--sea)}
+.small-link.armed{color:var(--accent)}
+.foot{font-size:13px;color:var(--muted);padding-block:18px 28px}
+
+/* conditions editor (used on home and in the sheet) */
+.cond{display:flex;flex-direction:column;gap:14px}
+.wind-read{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.kn{font-family:var(--f-display);font-weight:700;font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.kn small{font-size:22px;font-weight:600;margin-left:4px;color:var(--muted)}
+.bft{text-align:right;font-size:14px;color:var(--muted)}
+.bft b{display:block;font-family:var(--f-display);font-size:21px;color:var(--sea);text-transform:uppercase}
+.ctl{display:grid;grid-template-columns:52px 1fr 52px;gap:10px;align-items:center}
+.step{height:52px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:26px;font-weight:600;line-height:1}
+input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;padding:0 62px;margin-top:-8px}
+.sub{font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* overlays */
+.layer{position:absolute;inset:0;z-index:20;background:var(--bg)}
+.sheet-head .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:10px}
+.sheet-title{font-family:var(--f-display);font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.03em;text-align:center;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link{background:none;border:0;color:var(--sea);font-weight:600;padding:8px 4px;min-width:72px;text-align:left}
+.link.armed{color:var(--accent)}
+.preview{position:relative;border-radius:12px;overflow:hidden;background:#000;height:30vh;min-height:170px;max-height:300px;max-width:100%}
+.preview img,.preview video{width:100%;height:100%;object-fit:contain;display:block}
+.retake{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;border-radius:8px;padding:6px 12px;font-weight:600;font-size:14px}
+.sec{padding-block:16px 0;display:flex;flex-direction:column;gap:10px}
+.lbl{font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.req{color:var(--accent);font-size:13px;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:46px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:16px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chips.big .chip{flex:1 1 calc(50% - 4px);min-height:58px;font-family:var(--f-display);font-size:20px;text-transform:uppercase;letter-spacing:.03em}
+.chips.big .chip.wide{flex-basis:100%}
+.chips.three .chip{flex:1 1 calc(33% - 6px);padding:0 6px}
+.chip:disabled{opacity:.35}
+.crew-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.pick{min-height:58px;border-radius:12px;border:1px solid var(--line);background:var(--surface);text-align:left;padding:8px 12px;font-size:18px;font-weight:600;line-height:1.2;overflow-wrap:anywhere;display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.pick::after{content:"";width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none}
+.pick[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pick[aria-pressed="true"]::after{background:var(--accent);border-color:var(--accent)}
+.pick-note{font-size:14px;color:var(--muted)}
+.racebox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.race-read{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.race-n{font-family:var(--f-display);font-weight:700;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.race-max{font-size:13px;color:var(--muted);text-align:right}
+.fname-box{margin-top:16px;padding:12px;border-radius:10px;background:var(--sea-soft)}
+.fname-box .lbl{color:var(--sea)}
+.fname{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px;line-height:1.45;overflow-wrap:anywhere;margin-top:4px}
+.save-area{padding-block:14px 0;display:flex;flex-direction:column;gap:8px}
+.save{width:100%;height:60px;border-radius:12px;border:0;background:var(--accent);color:var(--accent-ink);font-family:var(--f-display);font-weight:700;font-size:24px;text-transform:uppercase;letter-spacing:.04em}
+.save:disabled{opacity:.4}
+.hint{font-size:14px;color:var(--accent);text-align:center;font-weight:600}
+.cond-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.cond-line span{font-weight:600;font-variant-numeric:tabular-nums;min-width:0}
+.cond-line button{flex:none;height:40px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:var(--bg);font-weight:600;color:var(--sea)}
+.cond-edit{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.cond-note{font-size:13px;color:var(--muted);margin-top:10px}
+.sheet-end{height:40px}
+
+.comp-body{display:flex;flex-direction:column;gap:14px;padding-block:24px}
+.comp-body h2{margin:0;font-family:var(--f-display);font-size:34px;line-height:1.05;text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+.comp-body p{margin:0;color:var(--muted)}
+.comp-in{height:60px;font-size:22px;font-weight:600}
+
+.toast{position:absolute;left:50%;bottom:calc(20px + var(--pb,env(safe-area-inset-bottom,0px)));transform:translateX(-50%);z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;width:max-content;max-width:calc(100% - 32px);overflow-wrap:anywhere;font-size:14px}
+@media (prefers-reduced-motion: no-preference){.cap,.chip,.pick,.save{transition:transform .08s,background-color .12s}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ================= HOME ================= -->
+<div class="scroller" id="home">
+  <header class="top"><div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3v20M16 4l9 17H16M16 7 9 21h7"/><path d="M5 25c2.5 2 5 2 7.5 0s5-2 7.5 0 5 2 7 0"/></svg>
+      Wake Log
+    </div>
+  </div></header>
+
+  <main class="wrap">
+    <section class="capture" aria-label="New capture">
+      <label class="cap primary" id="cap-photo">
+        <input class="file" type="file" id="in-photo" accept="image/*" capture="environment">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="4"/></svg>
+        <div><b>Photo</b><span id="photo-sub">Boat from astern</span></div>
+      </label>
+      <label class="cap">
+        <input class="file" type="file" id="in-video" accept="video/*" capture="environment">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg>
+        <div><b>Video</b><span>Training manoeuvres</span></div>
+      </label>
+      <label class="cap race" id="cap-race">
+        <input class="file" type="file" id="in-race" accept="video/*" capture="environment">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3"/><path d="M5 4h13l-3 4 3 4H5"/></svg>
+        <div><b>Race</b><span id="race-sub">Start and mark roundings</span></div>
+      </label>
+    </section>
+    <div class="comp-line" id="comp-line" hidden><span>Racing today: <b id="comp-name"></b></span><button class="small-link sea" id="comp-change" type="button">Change</button></div>
+
+    <section class="card" aria-labelledby="crew-title">
+      <div class="card-head">
+        <div class="card-title" id="crew-title">Training session<small id="crew-count"></small></div>
+        <button class="small-link" id="crew-clear" type="button" hidden>Clear all</button>
+      </div>
+      <div class="crew-list" id="crew-list"></div>
+      <form class="crew-add" id="crew-add" autocomplete="off">
+        <input class="text-in" id="crew-name" type="text" placeholder="Sailor name" aria-label="Sailor name" autocapitalize="words" maxlength="30" enterkeyhint="done">
+        <button class="addbtn" type="submit">Add</button>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="cond-title">
+      <div class="card-head"><div class="card-title" id="cond-title">Conditions<small>used for every shot</small></div></div>
+      <div class="cond" id="cond-home"></div>
+    </section>
+
+    <p class="foot">Everything stays on this phone. After each shot, Save opens the share sheet: choose “Save to Files” and pick your sailing folder.</p>
+  </main>
+</div>
+
+<!-- ================= CAPTURE SHEET ================= -->
+<section class="layer scroller" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-head"><div class="wrap">
+    <button class="link" id="cancel" type="button">Discard</button>
+    <div class="sheet-title" id="sheet-title">Photo</div>
+    <span style="min-width:72px"></span>
+  </div></div>
+  <div class="wrap">
+    <div class="preview" id="preview"></div>
+
+    <div class="sec" id="sec-man" hidden>
+      <div class="lbl">Manoeuvre <span class="req" id="req-man">Required</span></div>
+      <div class="chips big" id="man"></div>
+    </div>
+
+    <div class="sec" id="sec-crew">
+      <div class="lbl">Sailors <span class="req" id="req-crew">Pick at least one</span></div>
+      <div class="crew-pick" id="pick"></div>
+      <div class="pick-note" id="pick-note" hidden></div>
+    </div>
+
+    <div class="sec" id="sec-race" hidden>
+      <div class="lbl">Race number</div>
+      <div class="racebox">
+        <div class="race-read"><div class="race-n" id="race-n">R1</div><div class="race-max" id="race-max">Slider 1–12 · + goes higher</div></div>
+        <div class="ctl">
+          <button class="step" type="button" id="race-minus" aria-label="Previous race">−</button>
+          <input type="range" id="race-range" min="1" max="12" step="1" value="1" aria-label="Race number">
+          <button class="step" type="button" id="race-plus" aria-label="Next race">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fname-box"><div class="lbl">File name</div><div class="fname" id="fname"></div></div>
+
+    <div class="save-area">
+      <div class="hint" id="hint" hidden></div>
+      <button class="save" id="save" type="button">Save to Files</button>
+    </div>
+
+    <div class="cond-line"><span id="cond-sum"></span><button type="button" id="cond-toggle" aria-expanded="false">Change</button></div>
+    <div class="cond-edit" id="cond-edit-wrap" hidden>
+      <div class="cond" id="cond-sheet"></div>
+      <div class="cond-note">Changes here also update the session preset for the next shots.</div>
+    </div>
+    <div class="sheet-end"></div>
+  </div>
+  <input class="file" type="file" id="in-retake" accept="image/*" capture="environment">
+</section>
+
+<!-- ================= COMPETITION SCREEN ================= -->
+<section class="layer scroller" id="comp" hidden role="dialog" aria-modal="true" aria-labelledby="comp-title">
+  <div class="sheet-head"><div class="wrap">
+    <button class="link" id="comp-cancel" type="button">Cancel</button>
+    <div class="sheet-title">Race mode</div>
+    <span style="min-width:72px"></span>
+  </div></div>
+  <form class="wrap comp-body" id="comp-form" autocomplete="off">
+    <h2 id="comp-title">Which competition is today?</h2>
+    <p>The name goes into every race file name today. You’ll only be asked once a day.</p>
+    <input class="text-in comp-in" id="comp-input" type="text" placeholder="e.g. Balaton Cup" aria-label="Competition name" autocapitalize="words" maxlength="40" enterkeyhint="go">
+    <button class="save" id="comp-go" type="submit">Record race video</button>
+  </form>
+</section>
+
+<div class="toast" id="toast" hidden role="status"></div>
+</div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const MANS = ["Tack","Gybe","Top mark rounding","Bottom mark rounding","Start"];
+const NO_SAILORS = new Set(["Start"]);
+const RACE_TAGS = [["Start","start"],["Top mark","top-mark"],["Bottom mark","bottom-mark"]];
+const WH = ["Flat","< 0.5 m","0.5–1 m","1–1.5 m","1.5–2 m","2 m +"];
+const WS = ["Flat","Short chop","Long swell","Swell + chop","Confused"];
+const BFT_NAMES = ["Calm","Light air","Light breeze","Gentle breeze","Moderate breeze","Fresh breeze","Strong breeze","Near gale","Gale","Strong gale"];
+const BFT_TOP = [1,4,7,11,17,22,28,34,41];
+const bft = kn => { let i = 0; while (i < BFT_TOP.length && kn >= BFT_TOP[i]) i++; return i; };
+
+const ls = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const pad = n => String(n).padStart(2, "0");
+const dayKey = t => { const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const today = () => dayKey(Date.now());
+
+/* ---------- portrait lock (option A): counter-rotate the app when the phone is sideways ---------- */
+function applyOrientation(){
+  const app = $("#app"), W = window.innerWidth, H = window.innerHeight;
+  let angle = (screen.orientation && typeof screen.orientation.angle === "number") ? screen.orientation.angle
+            : (typeof window.orientation === "number" ? window.orientation : 0);
+  angle = ((angle % 360) + 360) % 360;
+  const phone = Math.min(W, H) < 600;
+  const sideways = phone && W > H && (angle === 90 || angle === 270);
+  const st = app.style;
+  if (!sideways) {
+    st.width = "100%"; st.height = "100%"; st.transform = "";
+    ["--pt","--pb","--pl","--pr"].forEach(v => st.removeProperty(v));
+    return;
+  }
+  st.width = H + "px"; st.height = W + "px";
+  // angle 90: phone turned counter-clockwise -> rotate content -90deg; angle 270: the other way.
+  st.transform = angle === 90 ? `translateY(${H}px) rotate(-90deg)` : `translateX(${W}px) rotate(90deg)`;
+  // the notch/home-bar insets move to the sides; keep a sensible gutter in the rotated frame
+  st.setProperty("--pt", "env(safe-area-inset-left, 0px)"); st.setProperty("--pb", "env(safe-area-inset-right, 0px)");
+  st.setProperty("--pl", "0px"); st.setProperty("--pr", "0px");
+  if (angle === 270) { st.setProperty("--pt", "env(safe-area-inset-right, 0px)"); st.setProperty("--pb", "env(safe-area-inset-left, 0px)"); }
+}
+window.addEventListener("resize", applyOrientation);
+window.addEventListener("orientationchange", () => setTimeout(applyOrientation, 50));
+if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener("change", applyOrientation);
+applyOrientation();
+
+/* ---------- session state ---------- */
+let crew = ls.get("wakelog.crew", []);
+const cond = Object.assign({ windKn: 12, waveHeight: "0.5–1 m", waveState: "Short chop" }, ls.get("wakelog.last", {}));
+function saveCond(){ ls.set("wakelog.last", cond); }
+function getComp(){ const c = ls.get("wakelog.comp", null); return c && c.day === today() && c.name ? c.name : ""; }
+function setComp(name){ ls.set("wakelog.comp", { day: today(), name }); }
+function getRace(){ const r = ls.get("wakelog.race", null); return r && r.day === today() ? r : { day: today(), n: 1, max: 12 }; }
+function setRace(r){ ls.set("wakelog.race", r); }
+
+/* ---------- file names ---------- */
+const slug = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "")
+  .replace(/</g, "lt").replace(/\+/g, "plus").replace(/[–—]/g, "-")
+  .replace(/\s+/g, "-").replace(/[^A-Za-z0-9.\-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+function extFor(file, kind){
+  const t = (file && file.type) || "", n = (file && file.name) || "";
+  const fromName = (n.match(/\.([A-Za-z0-9]{2,4})$/) || [])[1];
+  const map = { "image/jpeg":"jpg", "image/heic":"heic", "image/heif":"heif", "image/png":"png", "video/quicktime":"mov", "video/mp4":"mp4", "video/webm":"webm" };
+  return map[t] || (fromName ? fromName.toLowerCase() : (kind === "photo" ? "jpg" : "mov"));
+}
+const condParts = () => [`${cond.windKn}kn`, slug(cond.waveHeight.replace(/\s+/g, "")), slug(cond.waveState)];
+function typeLabel(d){ return d.kind === "photo" ? "Photo" : (d.manoeuvre || "Video"); }
+function serialKey(d){ return `wakelog.serial.${dayKey(d.createdAt)}.${slug(typeLabel(d))}`; }
+function nextSerial(d){ return (ls.get(serialKey(d), 0) || 0) + 1; }
+function clipKey(d){ return `wakelog.clip.${dayKey(d.createdAt)}.${slug(getComp())}.R${getRace().n}.${d.tag}`; }
+function nextClip(d){ return (ls.get(clipKey(d), 0) || 0) + 1; }
+function usesSailors(d){ return d.kind === "photo" || (d.kind === "video" && !NO_SAILORS.has(d.manoeuvre)); }
+function selectedNames(d){ return d.sailors.map(id => (crew.find(s => s.id === id) || {}).name).filter(Boolean); }
+function fileName(d){
+  const t = new Date(d.createdAt);
+  if (d.kind === "race") {
+    return [dayKey(d.createdAt), slug(getComp()), `R${getRace().n}-${d.tag || "clip"}${nextClip(d)}`, ...condParts()]
+      .filter(Boolean).join("_") + "." + extFor(d.file, "video");
+  }
+  const names = usesSailors(d) ? selectedNames(d) : [];
+  const parts = [dayKey(d.createdAt), `${pad(t.getHours())}${pad(t.getMinutes())}`, slug(typeLabel(d))];
+  if (names.length === 1) parts.push(slug(names[0]));
+  else if (names.length > 1) parts.push(pad(nextSerial(d)));
+  return [...parts, ...condParts()].filter(Boolean).join("_") + "." + extFor(d.file, d.kind);
+}
+
+/* ---------- conditions editor (two instances, one shared preset) ---------- */
+function buildCond(root){
+  root.innerHTML = `
+    <div>
+      <div class="wind-read"><div class="kn c-kn"></div><div class="bft c-bft"></div></div>
+      <div class="ctl" style="margin-top:10px">
+        <button class="step c-minus" type="button" aria-label="Less wind">−</button>
+        <input type="range" class="c-range" min="0" max="40" step="1" aria-label="Wind in knots">
+        <button class="step c-plus" type="button" aria-label="More wind">+</button>
+      </div>
+      <div class="scale" style="margin-top:2px"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span></div>
+    </div>
+    <div><div class="sub">Wave height</div><div class="chips c-wh" style="margin-top:8px"></div></div>
+    <div><div class="sub">Sea state</div><div class="chips c-ws" style="margin-top:8px"></div></div>`;
+  const mk = (el, opts, field) => opts.forEach(o => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = o; b.dataset.v = o;
+    b.addEventListener("click", () => { cond[field] = o; condChanged(); }); el.appendChild(b);
+  });
+  mk(root.querySelector(".c-wh"), WH, "waveHeight");
+  mk(root.querySelector(".c-ws"), WS, "waveState");
+  root.querySelector(".c-range").addEventListener("input", e => { cond.windKn = +e.target.value; condChanged(); });
+  root.querySelector(".c-minus").addEventListener("click", () => { cond.windKn = Math.max(0, cond.windKn - 1); condChanged(); });
+  root.querySelector(".c-plus").addEventListener("click", () => { cond.windKn = Math.min(40, cond.windKn + 1); condChanged(); });
+}
+function syncCond(){
+  document.querySelectorAll(".cond").forEach(root => {
+    const r = root.querySelector(".c-range"); if (!r) return;
+    if (+r.value !== cond.windKn) r.value = cond.windKn;
+    root.querySelector(".c-kn").innerHTML = cond.windKn + "<small>kn</small>";
+    const b = bft(cond.windKn); root.querySelector(".c-bft").innerHTML = "Beaufort " + b + "<b>" + BFT_NAMES[b] + "</b>";
+    root.querySelectorAll(".c-wh .chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.v === cond.waveHeight)));
+    root.querySelectorAll(".c-ws .chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.v === cond.waveState)));
+  });
+  $("#cond-sum").textContent = `${cond.windKn} kn · ${cond.waveHeight} · ${cond.waveState}`;
+}
+let condSaveT;
+function condChanged(){ syncCond(); refresh(); clearTimeout(condSaveT); condSaveT = setTimeout(saveCond, 250); }
+buildCond($("#cond-home")); buildCond($("#cond-sheet"));
+$("#cond-toggle").addEventListener("click", () => {
+  const w = $("#cond-edit-wrap"), open = w.hidden; w.hidden = !open;
+  $("#cond-toggle").textContent = open ? "Done" : "Change"; $("#cond-toggle").setAttribute("aria-expanded", String(open));
+  if (open) setTimeout(() => w.scrollIntoView({ behavior: "smooth", block: "nearest" }), 30);
+});
+
+/* ---------- crew (start screen only) ---------- */
+let clearArmed = false;
+function saveCrew(){ ls.set("wakelog.crew", crew); renderHome(); }
+function renderHome(){
+  const n = crew.length;
+  $("#crew-count").textContent = n ? `${n} sailor${n === 1 ? "" : "s"}` : "";
+  $("#crew-clear").hidden = !n;
+  $("#crew-clear").textContent = clearArmed ? "Tap again to clear" : "Clear all";
+  $("#crew-clear").classList.toggle("armed", clearArmed);
+  $("#crew-list").innerHTML = n
+    ? crew.map(s => `<div class="sailor"><b>${esc(s.name)}</b><button class="x" type="button" data-rm="${s.id}" aria-label="Remove ${esc(s.name)}">×</button></div>`).join("")
+    : `<div class="crew-empty">Add today’s sailors here. After each photo or video you tap their names.</div>`;
+  $("#cap-photo").classList.toggle("off", !n);
+  $("#in-photo").disabled = !n;
+  $("#photo-sub").textContent = n ? "Boat from astern" : "Add a sailor first";
+  const comp = getComp();
+  $("#comp-line").hidden = !comp; $("#comp-name").textContent = comp;
+  $("#race-sub").textContent = comp ? `${comp} · R${getRace().n}` : "Start and mark roundings";
+}
+$("#crew-add").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const name = $("#crew-name").value.trim().replace(/\s+/g, " ");
+  if (!name) { $("#crew-name").focus(); return; }
+  if (!crew.some(s => s.name.toLowerCase() === name.toLowerCase())) crew.push({ id: newId(), name });
+  $("#crew-name").value = ""; clearArmed = false; saveCrew(); $("#crew-name").focus();
+});
+$("#crew-list").addEventListener("click", e => {
+  const b = e.target.closest("[data-rm]"); if (!b) return;
+  crew = crew.filter(s => s.id !== b.dataset.rm); clearArmed = false; saveCrew();
+});
+$("#crew-clear").addEventListener("click", () => {
+  if (!clearArmed) { clearArmed = true; renderHome(); return; }
+  clearArmed = false; crew = []; saveCrew();
+});
+
+/* ---------- competition screen ---------- */
+let compThenRecord = false;
+function openComp(thenRecord){
+  compThenRecord = thenRecord;
+  $("#comp-input").value = getComp();
+  $("#comp-go").textContent = thenRecord ? "Record race video" : "Save name";
+  $("#comp-title").textContent = thenRecord ? "Which competition is today?" : "Competition name";
+  $("#comp").hidden = false;
+  setTimeout(() => $("#comp-input").focus(), 60);
+}
+$("#cap-race").addEventListener("click", e => {
+  if (!getComp()) { e.preventDefault(); openComp(true); }
+});
+$("#comp-change").addEventListener("click", () => openComp(false));
+$("#comp-cancel").addEventListener("click", () => { $("#comp").hidden = true; });
+$("#comp-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = $("#comp-input").value.trim().replace(/\s+/g, " ");
+  if (!name) { $("#comp-input").focus(); return; }
+  setComp(name); $("#comp-input").blur(); $("#comp").hidden = true; renderHome();
+  if (compThenRecord) $("#in-race").click();   // still inside the tap, so iOS opens the camera
+  else if (draft && draft.kind === "race") fillSheet();
+});
+
+/* ---------- capture → sheet ---------- */
+let draft = null, discardArmed = false;
+function startDraft(kind, file, keep){
+  if (!file) return;
+  if (draft && draft.url) URL.revokeObjectURL(draft.url);
+  draft = Object.assign({ createdAt: Date.now(), manoeuvre: null, tag: null, sailors: [] }, keep || {}, { kind, file, url: URL.createObjectURL(file) });
+  discardArmed = false;
+  fillSheet();
+  $("#cond-edit-wrap").hidden = true; $("#cond-toggle").textContent = "Change"; $("#cond-toggle").setAttribute("aria-expanded", "false");
+  $("#sheet").hidden = false; $("#sheet").scrollTop = 0;
+}
+function bindCapture(input, kind){
+  input.addEventListener("change", () => { const f = input.files && input.files[0]; input.value = ""; startDraft(kind, f); });
+}
+bindCapture($("#in-photo"), "photo");
+bindCapture($("#in-video"), "video");
+bindCapture($("#in-race"), "race");
+$("#in-retake").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f || !draft) return;
+  const { manoeuvre, tag, sailors } = draft;
+  startDraft(draft.kind, f, { manoeuvre, tag, sailors, createdAt: Date.now() });
+});
+
+function chipRow(el, options, current, onPick, wideLast){
+  el.innerHTML = "";
+  options.forEach(([label, value], i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+    if (wideLast && i === options.length - 1) b.classList.add("wide");
+    b.textContent = label; b.setAttribute("aria-pressed", String(value === current));
+    b.addEventListener("click", () => { onPick(value); el.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b))); refresh(); });
+    el.appendChild(b);
+  });
+}
+function renderPick(){
+  const el = $("#pick"); el.innerHTML = "";
+  crew.forEach(s => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "pick";
+    b.textContent = s.name; b.setAttribute("aria-pressed", String(draft.sailors.includes(s.id)));
+    b.addEventListener("click", () => {
+      draft.sailors = draft.sailors.includes(s.id) ? draft.sailors.filter(x => x !== s.id) : [...draft.sailors, s.id];
+      b.setAttribute("aria-pressed", String(draft.sailors.includes(s.id))); refresh();
+    });
+    el.appendChild(b);
+  });
+}
+function fillSheet(){
+  const k = draft.kind, isVid = k !== "photo";
+  $("#sheet-title").textContent = k === "race" ? `Race · ${getComp()}` : (k === "video" ? "Video" : "Photo");
+  $("#in-retake").accept = isVid ? "video/*" : "image/*";
+  $("#preview").innerHTML = (isVid
+    ? `<video src="${draft.url}" playsinline muted controls preload="metadata"></video>`
+    : `<img src="${draft.url}" alt="Captured photo">`) + `<label class="retake" for="in-retake">Retake</label>`;
+  const man = $("#man");
+  man.className = "chips big" + (k === "race" ? " three" : "");
+  $("#sec-man").hidden = k === "photo";
+  $("#sec-man .lbl").firstChild.textContent = k === "race" ? "Type " : "Manoeuvre ";
+  if (k === "video") {
+    chipRow(man, MANS.map(m => [m, m]), draft.manoeuvre, v => draft.manoeuvre = v, true);
+    if (!crew.length) man.querySelectorAll(".chip").forEach(c => { if (!NO_SAILORS.has(c.textContent)) c.disabled = true; });
+  } else if (k === "race") {
+    chipRow(man, RACE_TAGS, draft.tag, v => draft.tag = v, false);
+  }
+  $("#sec-race").hidden = k !== "race";
+  if (k === "race") renderRace();
+  renderPick();
+  $("#cancel").textContent = "Discard"; $("#cancel").classList.remove("armed");
+  syncCond(); refresh();
+}
+
+/* race number */
+function renderRace(){
+  const r = getRace();
+  const max = Math.max(12, r.max || 12, r.n);
+  $("#race-range").max = max; $("#race-range").value = r.n;
+  $("#race-n").textContent = "R" + r.n;
+  $("#race-max").textContent = max > 12 ? `Slider 1–${max}` : "Slider 1–12 · + goes higher";
+}
+function setRaceN(n){
+  const r = getRace(); n = Math.max(1, Math.round(n));
+  r.n = n; r.max = Math.max(12, r.max || 12, n); setRace(r); renderRace(); refresh();
+}
+$("#race-range").addEventListener("input", e => setRaceN(+e.target.value));
+$("#race-minus").addEventListener("click", () => setRaceN(getRace().n - 1));
+$("#race-plus").addEventListener("click", () => setRaceN(getRace().n + 1));
+
+function refresh(){
+  if (!draft) return;
+  const k = draft.kind;
+  const needType = (k === "video" && !draft.manoeuvre) || (k === "race" && !draft.tag);
+  const showCrew = k === "photo" || (k === "video" && draft.manoeuvre && usesSailors(draft));
+  $("#sec-crew").hidden = !showCrew;
+  const nSel = showCrew ? selectedNames(draft).length : 0;
+  const needCrew = showCrew && nSel === 0;
+  $("#req-man").hidden = !needType; $("#req-crew").hidden = !needCrew;
+  $("#pick-note").hidden = nSel < 2;
+  $("#pick-note").textContent = `${nSel} sailors selected: the file gets serial number ${pad(nextSerial(draft))} instead of names.`;
+  let hint = "";
+  if (needType) hint = k === "race" ? "Pick start, top mark or bottom mark" : "Pick the manoeuvre";
+  else if (needCrew) hint = "Pick a sailor";
+  $("#hint").textContent = hint; $("#hint").hidden = !hint;
+  $("#save").disabled = !!hint;
+  $("#fname").textContent = needType ? (k === "race" ? "Pick the type to build the name" : "Pick the manoeuvre to build the name") : fileName(draft);
+}
+
+function closeSheet(){
+  $("#sheet").hidden = true;
+  if (draft && draft.url) URL.revokeObjectURL(draft.url);
+  draft = null; renderHome(); $("#home").scrollTop = 0;
+}
+$("#cancel").addEventListener("click", () => {
+  if (!discardArmed) { discardArmed = true; $("#cancel").textContent = "Tap to confirm"; $("#cancel").classList.add("armed"); return; }
+  closeSheet(); toast("Discarded");
+});
+
+$("#save").addEventListener("click", async () => {
+  if (!draft || $("#save").disabled) return;
+  const d = draft, name = fileName(d);
+  const type = d.file.type || (d.kind === "photo" ? "image/jpeg" : "video/quicktime");
+  const out = new File([d.file], name, { type });
+  let ok = false;
+  if (navigator.canShare && navigator.canShare({ files: [out] })) {
+    try { await navigator.share({ files: [out] }); ok = true; }
+    catch (err) { if (err && err.name === "AbortError") { toast("Not saved yet – tap Save to Files again"); return; } }
+  }
+  if (!ok) {
+    try {
+      const a = document.createElement("a"); a.href = URL.createObjectURL(out); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 60000); ok = true;
+    } catch { toast("Couldn’t save this file on this phone"); return; }
+  }
+  if (d.kind === "race") ls.set(clipKey(d), nextClip(d));
+  else if (usesSailors(d) && selectedNames(d).length > 1) ls.set(serialKey(d), nextSerial(d));
+  saveCond();
+  closeSheet(); toast("Saved " + name);
+});
+
+let toastT;
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+
+syncCond(); renderHome();
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+})();
+</script>
+</body>
+</html>
