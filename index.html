@@ -138,6 +138,51 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
 .comp-body p{margin:0;color:var(--muted)}
 .comp-in{height:60px;font-size:22px;font-weight:600}
 
+/* clip workspaces */
+.db-btns{display:flex;flex-direction:column;gap:8px}
+.db-btn{flex-direction:column;align-items:flex-start;justify-content:center;gap:0;padding:10px 14px;text-align:left}
+.db-btn b{font-family:var(--f-display);font-size:21px;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.db-btn span{font-size:14px;font-weight:500;color:var(--muted)}
+.layer.over{z-index:25}
+.pv video{width:100%;max-height:75vh;background:#000;border-radius:10px;display:block}
+.tp-foot{display:flex;flex-direction:column;gap:8px;padding-block:20px 30px}
+.ws-top{display:flex;flex-direction:column;gap:12px;padding-top:6px}
+.ws-comp{display:flex;flex-direction:column;gap:6px}
+.ws-auto{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;font-size:14px;color:var(--muted)}
+.ws-auto-ctl{display:flex;align-items:center;gap:8px}
+.ws-auto-ctl b{font-family:var(--f-display);font-size:22px;color:var(--ink);min-width:40px;text-align:center}
+.step.sm{width:40px;height:40px;font-size:22px}
+.ws-selbar{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);font-weight:600;min-height:32px}
+.ws-list{display:flex;flex-direction:column;gap:8px;padding-block:4px 12px}
+.ws-day{font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:6px}
+.clip{display:grid;grid-template-columns:32px 88px minmax(0,1fr);gap:10px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}
+.clip.sel{border-color:var(--sea);box-shadow:inset 0 0 0 1px var(--sea)}
+.ck{width:30px;height:30px;border-radius:8px;border:2px solid var(--line);background:var(--bg);margin-top:2px;padding:0;position:relative}
+.ck[aria-pressed="true"]{background:var(--sea);border-color:var(--sea)}
+.ck[aria-pressed="true"]::after{content:"";position:absolute;left:8px;top:3px;width:8px;height:14px;border:solid var(--surface);border-width:0 3px 3px 0;transform:rotate(45deg)}
+.cthumb{position:relative;width:88px;height:66px;border-radius:8px;border:0;padding:0;background:#000;overflow:hidden}
+.cthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.cthumb span{position:absolute;right:4px;bottom:4px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;font-weight:600;border-radius:4px;padding:1px 4px;font-variant-numeric:tabular-nums}
+.cmeta{min-width:0;display:flex;flex-direction:column;gap:3px;cursor:pointer}
+.ctime{font-weight:700;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
+.rchip{font-family:var(--f-display);font-weight:700;font-size:15px;background:var(--race);color:var(--race-ink);border-radius:5px;padding:0 6px;line-height:1.4}
+.ctags{font-size:14px;overflow-wrap:anywhere}
+.ctags.muted{color:var(--muted)}
+.ctags.ok{color:var(--sea);font-weight:600}
+.ctags.err{color:var(--accent);font-weight:600}
+.cname{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;color:var(--muted);overflow-wrap:anywhere;line-height:1.35}
+.cact{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:4px}
+.cact .x{margin-left:auto}
+.mini{height:36px;padding:0 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg);font-weight:600;font-size:14px;color:var(--sea)}
+.ws-add{margin-bottom:12px}
+.ws-bar{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding-block:10px calc(10px + var(--pb, env(safe-area-inset-bottom,0px)));display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ws-bar-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ws-bar-row .btn-sec{min-height:48px;font-size:15px}
+.ws-bar-row .btn-sec[hidden]+.btn-sec,.ws-bar-row .btn-sec:only-child{grid-column:1 / -1}
+.ws-bar .save{height:54px;font-size:21px}
+.save.alt{background:var(--ink);color:var(--bg)}
+.btn-sec:disabled{opacity:.4}
+
 /* debrief / start timer */
 .btn-sec{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:17px;color:var(--ink);cursor:pointer;text-align:center}
 .btn-sec.danger{color:var(--accent)}
@@ -213,18 +258,11 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
         <div><b>Photo</b><span id="photo-sub">Boat from astern</span></div>
       </label>
       <label class="cap">
-        <input class="file" type="file" id="in-video" accept="video/*" capture="environment">
+        <input class="file" type="file" id="in-video" accept="video/*" multiple>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3z"/></svg>
-        <div><b>Video</b><span>Training manoeuvres</span></div>
-      </label>
-      <label class="cap race" id="cap-race">
-        <input class="file" type="file" id="in-race" accept="video/*" capture="environment">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V3"/><path d="M5 4h13l-3 4 3 4H5"/></svg>
-        <div><b>Race</b><span id="race-sub">Start and mark roundings</span></div>
+        <div><b>Video</b><span>Tag clips from Files</span></div>
       </label>
     </section>
-    <div class="comp-line" id="comp-line" hidden><span>Racing today: <b id="comp-name"></b></span><button class="small-link sea" id="comp-change" type="button">Change</button></div>
-
     <section class="card" aria-labelledby="crew-title">
       <div class="card-head">
         <div class="card-title" id="crew-title">Training session<small id="crew-count"></small></div>
@@ -244,11 +282,14 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
 
     <section class="card" aria-labelledby="db-card-title">
       <div class="card-head"><div class="card-title" id="db-card-title">Debrief</div></div>
-      <p class="db-intro">Burn a start timer into start videos, synced to the watch you filmed at the start of the clip.</p>
-      <label class="btn-sec"><input class="file" type="file" id="db-add-home" accept="video/*" multiple>Add start timer</label>
+      <div class="db-btns">
+        <label class="btn-sec db-btn"><input class="file" type="file" id="db-in-tstart" accept="video/*" multiple><b>Training starts</b><span>Sync to watch, burn timer</span></label>
+        <label class="btn-sec db-btn"><input class="file" type="file" id="db-in-rstart" accept="video/*" multiple><b>Race starts</b><span>Race numbers, sync, burn timer</span></label>
+        <label class="btn-sec db-btn"><input class="file" type="file" id="db-in-rmark" accept="video/*" multiple><b>Race marks</b><span>Top and bottom mark roundings</span></label>
+      </div>
     </section>
 
-    <p class="foot">Everything stays on this phone. After each shot, Save opens the share sheet: choose “Save to Files” and pick your sailing folder.</p>
+    <p class="foot">Everything stays on this phone. Film videos with the Camera app for full quality, then tag them here. Save opens the share sheet: choose “Save to Files” and pick your sailing folder.</p>
   </main>
 </div>
 
@@ -292,7 +333,7 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
       <button class="save" id="save" type="button">Save to Files</button>
     </div>
 
-    <div class="cond-line"><span id="cond-sum"></span><button type="button" id="cond-toggle" aria-expanded="false">Change</button></div>
+    <div class="cond-line"><span id="cond-sum" class="cond-sum"></span><button type="button" id="cond-toggle" aria-expanded="false">Change</button></div>
     <div class="cond-edit" id="cond-edit-wrap" hidden>
       <div class="cond" id="cond-sheet"></div>
       <div class="cond-note">Changes here also update the session preset for the next shots.</div>
@@ -302,36 +343,37 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
   <input class="file" type="file" id="in-retake" accept="image/*" capture="environment">
 </section>
 
-<!-- ================= COMPETITION SCREEN ================= -->
-<section class="layer scroller" id="comp" hidden role="dialog" aria-modal="true" aria-labelledby="comp-title">
-  <div class="sheet-head"><div class="wrap">
-    <button class="link" id="comp-cancel" type="button">Cancel</button>
-    <div class="sheet-title">Race mode</div>
-    <span style="min-width:72px"></span>
-  </div></div>
-  <form class="wrap comp-body" id="comp-form" autocomplete="off">
-    <h2 id="comp-title">Which competition is today?</h2>
-    <p>The name goes into every race file name today. You’ll only be asked once a day.</p>
-    <input class="text-in comp-in" id="comp-input" type="text" placeholder="e.g. Balaton Cup" aria-label="Competition name" autocapitalize="words" maxlength="40" enterkeyhint="go">
-    <button class="save" id="comp-go" type="submit">Record race video</button>
-  </form>
-</section>
-
 <!-- ================= DEBRIEF: START TIMER ================= -->
 <section class="layer scroller" id="db" hidden role="dialog" aria-modal="true" aria-labelledby="db-title">
   <div class="sheet-head"><div class="wrap">
     <button class="link" id="db-close" type="button">Close</button>
-    <div class="sheet-title" id="db-title">Start timer</div>
+    <div class="sheet-title" id="db-title">Debrief</div>
     <span style="min-width:72px"></span>
   </div></div>
   <div class="wrap">
     <div id="db-listview">
-      <p class="db-intro">Sync each video to your watch, then burn the timer in. Originals are never changed.</p>
-      <div class="db-list" id="db-list"></div>
-      <div class="db-actions">
-        <button class="save" id="db-burn" type="button">Burn timer</button>
-        <button class="btn-sec" id="db-saveall" type="button" hidden>Save all to Files</button>
-        <label class="btn-sec"><input class="file" type="file" id="db-add" accept="video/*" multiple>Add videos</label>
+      <div class="ws-top">
+        <div class="ws-comp" id="ws-comp-row" hidden>
+          <label class="lbl" for="ws-comp">Competition</label>
+          <input class="text-in comp-in" id="ws-comp" type="text" placeholder="e.g. Balaton Cup" autocapitalize="words" maxlength="40" autocomplete="off">
+        </div>
+        <div class="ws-auto" id="ws-auto" hidden>
+          <span>Race numbers fill in from gaps of 10+ min, starting at</span>
+          <div class="ws-auto-ctl"><button type="button" class="step sm" id="ws-rs-minus" aria-label="Start at a lower race number">−</button><b id="ws-rs">R1</b><button type="button" class="step sm" id="ws-rs-plus" aria-label="Start at a higher race number">+</button></div>
+          <button type="button" class="small-link sea" id="ws-renumber">Re-number all</button>
+        </div>
+        <div class="ws-selbar"><span id="ws-count"></span><button type="button" class="small-link sea" id="ws-selall" hidden>Select all</button></div>
+      </div>
+      <div class="ws-list" id="ws-list"></div>
+      <label class="btn-sec ws-add"><input class="file" type="file" id="ws-add" accept="video/*" multiple>Add more clips</label>
+      <div class="ws-bar" id="ws-bar" hidden>
+        <div class="hint" id="ws-hint" hidden></div>
+        <div class="ws-bar-row" id="ws-bar-row">
+          <button class="btn-sec" type="button" id="ws-tag">Tag selected</button>
+          <button class="btn-sec" type="button" id="ws-race">Race number</button>
+        </div>
+        <button class="save" type="button" id="ws-burn" hidden>Burn timer</button>
+        <button class="save" type="button" id="ws-save">Save to Files</button>
       </div>
     </div>
 
@@ -386,6 +428,23 @@ input[type=range]{width:100%;accent-color:var(--accent);height:40px;margin:0}
       <button class="btn-sec danger" id="bn-cancel" type="button">Cancel</button>
     </div>
   </div>
+</section>
+
+<!-- ================= TAG PANEL ================= -->
+<section class="layer scroller over" id="tp" hidden role="dialog" aria-modal="true" aria-labelledby="tp-title">
+  <div class="sheet-head"><div class="wrap">
+    <button class="link" id="tp-cancel" type="button">Cancel</button>
+    <div class="sheet-title" id="tp-title">Tag clips</div>
+    <span style="min-width:72px"></span>
+  </div></div>
+  <div class="wrap" id="tp-body"></div>
+  <div class="wrap tp-foot"><div class="hint" id="tp-hint" hidden></div><button class="save" id="tp-apply" type="button">Apply</button></div>
+</section>
+
+<!-- ================= CLIP PREVIEW ================= -->
+<section class="layer over pv" id="pv" hidden role="dialog" aria-modal="true" aria-label="Clip preview">
+  <div class="sheet-head"><div class="wrap"><button class="link" id="pv-close" type="button">Close</button></div></div>
+  <div class="wrap"><video id="pv-vid" playsinline controls preload="metadata"></video></div>
 </section>
 
 <div class="toast" id="toast" hidden role="status"></div>
@@ -513,7 +572,7 @@ function syncCond(){
     root.querySelectorAll(".c-wh .chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.v === cond.waveHeight)));
     root.querySelectorAll(".c-ws .chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.v === cond.waveState)));
   });
-  $("#cond-sum").textContent = `${cond.windKn} kn · ${cond.waveHeight} · ${cond.waveState}`;
+  document.querySelectorAll(".cond-sum").forEach(el => el.textContent = `${cond.windKn} kn · ${cond.waveHeight} · ${cond.waveState}`);
 }
 let condSaveT;
 function condChanged(){ syncCond(); refresh(); clearTimeout(condSaveT); condSaveT = setTimeout(saveCond, 250); }
@@ -539,9 +598,6 @@ function renderHome(){
   $("#cap-photo").classList.toggle("off", !n);
   $("#in-photo").disabled = !n;
   $("#photo-sub").textContent = n ? "Boat from astern" : "Add a sailor first";
-  const comp = getComp();
-  $("#comp-line").hidden = !comp; $("#comp-name").textContent = comp;
-  $("#race-sub").textContent = comp ? `${comp} · R${getRace().n}` : "Start and mark roundings";
 }
 $("#crew-add").addEventListener("submit", ev => {
   ev.preventDefault();
@@ -559,30 +615,6 @@ $("#crew-clear").addEventListener("click", () => {
   clearArmed = false; crew = []; saveCrew();
 });
 
-/* ---------- competition screen ---------- */
-let compThenRecord = false;
-function openComp(thenRecord){
-  compThenRecord = thenRecord;
-  $("#comp-input").value = getComp();
-  $("#comp-go").textContent = thenRecord ? "Record race video" : "Save name";
-  $("#comp-title").textContent = thenRecord ? "Which competition is today?" : "Competition name";
-  $("#comp").hidden = false;
-  setTimeout(() => $("#comp-input").focus(), 60);
-}
-$("#cap-race").addEventListener("click", e => {
-  if (!getComp()) { e.preventDefault(); openComp(true); }
-});
-$("#comp-change").addEventListener("click", () => openComp(false));
-$("#comp-cancel").addEventListener("click", () => { $("#comp").hidden = true; });
-$("#comp-form").addEventListener("submit", e => {
-  e.preventDefault();
-  const name = $("#comp-input").value.trim().replace(/\s+/g, " ");
-  if (!name) { $("#comp-input").focus(); return; }
-  setComp(name); $("#comp-input").blur(); $("#comp").hidden = true; renderHome();
-  if (compThenRecord) $("#in-race").click();   // still inside the tap, so iOS opens the camera
-  else if (draft && draft.kind === "race") fillSheet();
-});
-
 /* ---------- capture → sheet ---------- */
 let draft = null, discardArmed = false;
 function startDraft(kind, file, keep){
@@ -598,8 +630,6 @@ function bindCapture(input, kind){
   input.addEventListener("change", () => { const f = input.files && input.files[0]; input.value = ""; startDraft(kind, f); });
 }
 bindCapture($("#in-photo"), "photo");
-bindCapture($("#in-video"), "video");
-bindCapture($("#in-race"), "race");
 $("#in-retake").addEventListener("change", e => {
   const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f || !draft) return;
   const { manoeuvre, tag, sailors } = draft;
@@ -724,12 +754,28 @@ let toastT;
 function toast(msg){ const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
 
 /* =====================================================================
-   DEBRIEF: burn a start timer into videos, synced to the coach's watch
+   CLIP WORKSPACES: bulk Video tagging + Debrief (training starts,
+   race starts, race marks). Clips come from Files at full quality.
    ===================================================================== */
-const db = { clips: [], cur: null, side: "before", running: false, cancel: null };
+const MODES = {
+  train:  { title: "Tag videos",      race: false, burn: false, tag: true,
+            empty: "Pick the clips you filmed with the Camera app. Then tick clips and tap Tag selected." },
+  tstart: { title: "Training starts", race: false, burn: true,  tag: false,
+            empty: "Pick your training start clips, sync each one to your watch, then burn the timer in." },
+  rstart: { title: "Race starts",     race: true,  burn: true,  tag: false,
+            empty: "Pick the race start clips. Race numbers are filled in from the gaps between clips. Sync each clip, then burn." },
+  rmark:  { title: "Race marks",      race: true,  burn: false, tag: true,
+            empty: "Pick the mark rounding clips. Race numbers are filled in automatically; tag each clip Top or Bottom mark." },
+};
+const MARK_TAGS = [["Top mark", "top-mark"], ["Bottom mark", "bottom-mark"]];
+const RACE_GAP_MS = 10 * 60 * 1000;
+const states = {};
+let ws = null;
+const G = { cur: null, side: "before", running: false, cancel: null, loading: 0 };
+function getWs(mode){ return states[mode] || (states[mode] = { mode, clips: [], sel: new Set(), pending: null, raceStart: 1, comp: null }); }
+
 const fmtClock = s => { s = Math.max(0, s); return Math.floor(s / 60) + ":" + pad(Math.floor(s % 60)); };
 const fmtPos = s => { s = Math.max(0, s || 0); return Math.floor(s / 60) + ":" + pad(Math.floor(s % 60)) + "." + Math.floor((s * 10) % 10); };
-// Timer text at video time t (seconds) for a gun at `gun`: whole seconds, counting down then up.
 function timerText(t, gun){
   const d = t - gun;
   if (d < 0) return "−" + fmtClock(Math.ceil(-d - 1e-6));
@@ -745,78 +791,392 @@ function parseWatch(str){
   if (sec > 59) return null;
   return m * 60 + sec;
 }
-function loadMeta(url){
+
+/* ---- when was the clip filmed? read it from the video file itself ---- */
+async function readCreation(file){
+  try {
+    const size = file.size; let pos = 0, moov = null;
+    for (let i = 0; i < 64 && pos + 8 <= size; i++) {
+      const h = new DataView(await file.slice(pos, pos + 16).arrayBuffer());
+      let len = h.getUint32(0);
+      const type = String.fromCharCode(h.getUint8(4), h.getUint8(5), h.getUint8(6), h.getUint8(7));
+      if (len === 1 && h.byteLength >= 16) len = Number(h.getBigUint64(8)); else if (len === 0) len = size - pos;
+      if (len < 8) break;
+      if (type === "moov") { if (len < 64 * 1024 * 1024) moov = new Uint8Array(await file.slice(pos, pos + len).arrayBuffer()); break; }
+      pos += len;
+    }
+    if (!moov) return null;
+    let s = "";
+    for (let i = 0; i < moov.length; i += 16384) s += String.fromCharCode.apply(null, moov.subarray(i, i + 16384));
+    // iPhone: com.apple.quicktime.creationdate, e.g. 2026-10-17T14:32:05+0200
+    const m = s.match(/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})([+-]\d{2}:?\d{2}|Z)/);
+    if (m) {
+      const tz = m[2] === "Z" ? "Z" : (m[2].includes(":") ? m[2] : m[2].slice(0, 3) + ":" + m[2].slice(3));
+      const t = Date.parse(m[1] + tz); if (!isNaN(t)) return t;
+    }
+    const k = s.indexOf("mvhd");
+    if (k >= 0) {
+      const dv = new DataView(moov.buffer, moov.byteOffset + k + 4);
+      const secs = dv.getUint8(0) === 1 ? Number(dv.getBigUint64(4)) : dv.getUint32(4);
+      const t = (secs - 2082844800) * 1000;
+      if (secs > 0 && t > 946684800000) return t;
+    }
+  } catch {}
+  return null;
+}
+function probe(url){
   return new Promise(res => {
-    const v = document.createElement("video"); v.preload = "metadata"; v.muted = true; v.playsInline = true;
-    const done = d => { v.removeAttribute("src"); v.load(); res(d); };
-    v.onloadedmetadata = () => done(isFinite(v.duration) ? v.duration : null);
-    v.onerror = () => done(null);
-    setTimeout(() => done(null), 8000);
+    const v = document.createElement("video"); v.muted = true; v.playsInline = true; v.preload = "auto";
+    let done = false, dur = null;
+    const fin = thumb => { if (done) return; done = true; v.removeAttribute("src"); v.load(); res({ duration: dur, thumb }); };
+    setTimeout(() => fin(null), 10000);
+    v.onloadedmetadata = () => { dur = isFinite(v.duration) ? v.duration : null; try { v.currentTime = Math.min(0.5, (v.duration || 1) / 2); } catch { fin(null); } };
+    v.onseeked = () => {
+      try {
+        const w = v.videoWidth, h = v.videoHeight; if (!w) return fin(null);
+        const s = 240 / Math.max(w, h), c = document.createElement("canvas");
+        c.width = Math.round(w * s); c.height = Math.round(h * s);
+        c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+        c.toBlob(b => fin(b ? URL.createObjectURL(b) : null), "image/jpeg", .7);
+      } catch { fin(null); }
+    };
+    v.onerror = () => fin(null);
     v.src = url;
   });
 }
+
 async function addClips(files){
   const list = [...(files || [])].filter(f => f && (f.type.startsWith("video/") || /\.(mov|mp4|m4v|webm)$/i.test(f.name)));
   if (!list.length) return;
+  const W = ws; G.loading += list.length; renderWs();
   for (const f of list) {
-    const c = { id: newId(), file: f, name: f.name, url: URL.createObjectURL(f), duration: null, gun: null, out: null, outName: "", state: "new", err: "" };
-    db.clips.push(c);
-    c.duration = await loadMeta(c.url);
+    const c = { id: newId(), file: f, name: f.name, url: URL.createObjectURL(f), recTime: f.lastModified || Date.now(),
+      duration: null, thumb: null, tag: null, cond: null, n: null, raceManual: false, gun: null, out: null, saved: false, state: "new", err: "" };
+    const t = await readCreation(f); if (t) c.recTime = t;
+    const p = await probe(c.url); c.duration = p.duration; c.thumb = p.thumb;
+    W.clips.push(c); W.clips.sort((a, b) => a.recTime - b.recTime);
+    G.loading--; W.pending = null;
+    if (MODES[W.mode].race) autoNumber(W);
+    if (ws === W) renderWs();
   }
-  showDb("list");
 }
+function autoNumber(W){
+  let g = 0, prevEnd = null;
+  W.clips.forEach(c => {
+    if (prevEnd == null || c.recTime - prevEnd >= RACE_GAP_MS) g++;
+    prevEnd = Math.max(prevEnd || 0, c.recTime + (c.duration || 0) * 1000);
+    if (!c.raceManual) c.n = W.raceStart + g - 1;
+  });
+}
+
+/* ---- names ---- */
+const condPartsOf = k => [`${k.windKn}kn`, slug(k.waveHeight.replace(/\s+/g, "")), slug(k.waveState)];
+const namesOf = tag => (tag && tag.sailors || []).map(id => (crew.find(s => s.id === id) || {}).name).filter(Boolean);
+const tagNeedsSailors = tag => !NO_SAILORS.has(tag.manoeuvre);
+function ordinal(c, pred){ return ws.clips.filter(pred).indexOf(c) + 1; }
+function ready(c){
+  if (ws.mode === "train") return !!c.tag && (!tagNeedsSailors(c.tag) || namesOf(c.tag).length > 0);
+  if (ws.mode === "rmark") return !!c.tag && !!ws.comp && c.n != null;
+  if (ws.mode === "rstart") return !!c.out && !!ws.comp && c.n != null;
+  return !!c.out;
+}
+function burnable(c){ return c.gun != null && !c.out && (ws.mode !== "rstart" || !!ws.comp); }
+function nameFor(c){
+  const d = new Date(c.recTime), day = dayKey(c.recTime), hm = pad(d.getHours()) + pad(d.getMinutes());
+  const cp = condPartsOf(c.cond || cond);
+  const outExt = c.out ? (c.out.type.includes("webm") ? "webm" : "mp4") : "mp4";
+  if (ws.mode === "train") {
+    if (!c.tag) return null;
+    const man = c.tag.manoeuvre, names = tagNeedsSailors(c.tag) ? namesOf(c.tag) : [];
+    if (tagNeedsSailors(c.tag) && !names.length) return null;
+    const parts = [day, hm, slug(man)];
+    if (names.length === 1) parts.push(slug(names[0]));
+    else if (names.length > 1) parts.push(pad(ordinal(c, x => x.tag && x.tag.manoeuvre === man && dayKey(x.recTime) === day && tagNeedsSailors(x.tag) && namesOf(x.tag).length > 1)));
+    return [...parts, ...cp].join("_") + "." + extFor(c.file, "video");
+  }
+  if (ws.mode === "tstart") {
+    const named = /^\d{4}-\d{2}-\d{2}_/.test(c.name);
+    const base = named ? c.name.replace(/\.[^.]+$/, "") : [day, hm, "Start", ...cp].join("_");
+    return base + "_timer." + outExt;
+  }
+  if (!ws.comp || c.n == null) return null;
+  if (ws.mode === "rstart") {
+    const k = ordinal(c, x => x.n === c.n);
+    return [day, slug(ws.comp), `R${c.n}-start${k}`, ...cp].join("_") + "_timer." + outExt;
+  }
+  if (!c.tag) return null;
+  const k = ordinal(c, x => x.n === c.n && x.tag === c.tag);
+  return [day, slug(ws.comp), `R${c.n}-${c.tag}${k}`, ...cp].join("_") + "." + extFor(c.file, "video");
+}
+
+/* ---- opening a workspace ---- */
+function openWs(mode, files){
+  ws = getWs(mode); const M = MODES[mode];
+  if (ws.comp == null) ws.comp = getComp();
+  $("#ws-comp-row").hidden = !M.race; $("#ws-comp").value = ws.comp || "";
+  $("#ws-auto").hidden = !M.race;
+  showDb("list");
+  if (files && files.length) addClips(files);
+}
+function bindOpen(input, mode){
+  input.addEventListener("change", () => { const fs = [...(input.files || [])]; input.value = ""; if (fs.length) openWs(mode, fs); });
+}
+bindOpen($("#in-video"), "train");
+bindOpen($("#db-in-tstart"), "tstart");
+bindOpen($("#db-in-rstart"), "rstart");
+bindOpen($("#db-in-rmark"), "rmark");
+$("#ws-add").addEventListener("change", e => { const fs = [...(e.target.files || [])]; e.target.value = ""; addClips(fs); });
+$("#ws-comp").addEventListener("input", e => {
+  ws.comp = e.target.value.trim().replace(/\s+/g, " "); ws.pending = null;
+  if (ws.comp) setComp(ws.comp);
+  renderWs();
+});
+$("#ws-rs-minus").addEventListener("click", () => { ws.raceStart = Math.max(1, ws.raceStart - 1); autoNumber(ws); ws.pending = null; renderWs(); });
+$("#ws-rs-plus").addEventListener("click", () => { ws.raceStart += 1; autoNumber(ws); ws.pending = null; renderWs(); });
+$("#ws-renumber").addEventListener("click", () => { ws.clips.forEach(c => c.raceManual = false); autoNumber(ws); ws.pending = null; renderWs(); toast("Race numbers filled in again from the gaps"); });
+
 function showDb(view){
   $("#db").hidden = false;
   $("#db-listview").hidden = view !== "list";
   $("#db-syncview").hidden = view !== "sync";
   $("#db-burnview").hidden = view !== "burn";
   $("#db-close").hidden = view === "burn";
-  if (view !== "sync") { const v = $("#db-vid"); v.pause(); }
-  if (view === "list") { $("#db-title").textContent = "Start timer"; renderDbList(); }
+  if (view !== "sync") vid.pause();
+  if (view === "list") renderWs();
   $("#db").scrollTop = 0;
 }
-function renderDbList(){
-  const el = $("#db-list");
-  if (!db.clips.length) { el.innerHTML = `<div class="db-empty">Add your start videos. For each one you’ll scrub to the moment your watch is readable and type what it shows.</div>`; }
-  else el.innerHTML = db.clips.map(c => {
-    let st;
-    if (c.state === "done") st = `<div class="db-state ok"><b>Timer burned</b> · ready to save as ${esc(c.outName)}</div>`;
-    else if (c.state === "error") st = `<div class="db-state err">${esc(c.err)}</div>`;
-    else if (c.gun != null) st = `<div class="db-state"><b>Synced</b> · gun at ${fmtPos(c.gun)} in the video</div>`;
-    else st = `<div class="db-state">Not synced yet${c.duration ? " · " + fmtClock(c.duration) + " long" : ""}</div>`;
-    const btns = c.state === "done"
-      ? `<button class="btn-sec" type="button" data-save="${c.id}">Save to Files</button><button class="btn-sec" type="button" data-sync="${c.id}">Edit sync</button>`
-      : `<button class="btn-sec" type="button" data-sync="${c.id}">${c.gun != null ? "Edit sync" : "Sync to watch"}</button>`;
-    return `<div class="db-item"><div class="db-item-top"><div class="db-name">${esc(c.name)}</div><button class="x" type="button" data-del="${c.id}" aria-label="Remove ${esc(c.name)}">×</button></div>${st}<div class="db-row">${btns}</div></div>`;
-  }).join("");
-  const toBurn = db.clips.filter(c => c.gun != null && c.state !== "done").length;
-  const ready = db.clips.filter(c => c.state === "done").length;
-  $("#db-burn").hidden = !toBurn;
-  $("#db-burn").textContent = toBurn > 1 ? `Burn all (${toBurn})` : "Burn timer";
-  $("#db-saveall").hidden = ready < 2;
-  $("#db-saveall").textContent = `Save all to Files (${ready})`;
-}
-function bindAdd(input){ input.addEventListener("change", () => { const fs = input.files; addClips(fs).finally(() => { input.value = ""; }); }); }
-bindAdd($("#db-add-home")); bindAdd($("#db-add"));
 $("#db-close").addEventListener("click", () => { $("#db").hidden = true; });
-$("#db-list").addEventListener("click", e => {
-  const s = e.target.closest("[data-sync]"), d = e.target.closest("[data-del]"), sv = e.target.closest("[data-save]");
-  if (s) openSync(db.clips.find(c => c.id === s.dataset.sync));
-  else if (sv) { const c = db.clips.find(x => x.id === sv.dataset.save); if (c) shareFiles([new File([c.out], c.outName, { type: c.out.type })]); }
-  else if (d) { const c = db.clips.find(x => x.id === d.dataset.del); if (c) URL.revokeObjectURL(c.url); db.clips = db.clips.filter(x => x.id !== d.dataset.del); renderDbList(); }
+
+/* ---- the clip list ---- */
+function statusOf(c){
+  const M = MODES[ws.mode];
+  if (c.state === "error") return ["err", c.err];
+  if (M.burn) {
+    if (c.out) return ["ok", c.saved ? "Timer burned · saved" : "Timer burned · ready to save"];
+    if (c.gun != null) return ["", `Synced · gun at ${fmtPos(c.gun)}`];
+    return ["muted", "Not synced yet"];
+  }
+  if (!c.tag) return ["muted", "Not tagged"];
+  const label = ws.mode === "rmark" ? (MARK_TAGS.find(t => t[1] === c.tag) || [c.tag])[0]
+    : c.tag.manoeuvre + (tagNeedsSailors(c.tag) ? " · " + (namesOf(c.tag).join(", ") || "no sailor") : "");
+  return [c.saved ? "ok" : "", label + (c.saved ? " · saved" : "")];
+}
+function prevTagged(c){ const i = ws.clips.indexOf(c); for (let j = i - 1; j >= 0; j--) if (ws.clips[j].tag) return ws.clips[j]; return null; }
+function renderWs(){
+  if (!ws) return;
+  const M = MODES[ws.mode];
+  $("#db-title").textContent = M.title;
+  $("#ws-rs").textContent = "R" + ws.raceStart;
+  const list = $("#ws-list");
+  if (!ws.clips.length) {
+    list.innerHTML = G.loading ? "" : `<div class="db-empty">${esc(M.empty)}</div>`;
+  } else {
+    let html = "", day = "";
+    ws.clips.forEach(c => {
+      const d = new Date(c.recTime), dk = dayKey(c.recTime);
+      if (dk !== day) { day = dk; html += `<div class="ws-day">${esc(d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }))}</div>`; }
+      const sel = ws.sel.has(c.id), when = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      const [cls, st] = statusOf(c), nm = nameFor(c);
+      let acts = "";
+      if (M.burn) acts = `<button class="mini" type="button" data-sync="${c.id}">${c.gun != null ? "Edit sync" : "Sync to watch"}</button>`;
+      else if (prevTagged(c)) acts = `<button class="mini" type="button" data-same="${c.id}">Same as previous</button>`;
+      html += `<div class="clip${sel ? " sel" : ""}">
+        <button class="ck" type="button" data-ck="${c.id}" aria-pressed="${sel}" aria-label="Select clip filmed ${when}"></button>
+        <button class="cthumb" type="button" data-pv="${c.id}" aria-label="Play clip filmed ${when}">${c.thumb ? `<img src="${c.thumb}" alt="">` : ""}<span>${c.duration ? fmtClock(Math.round(c.duration)) : ""}</span></button>
+        <div class="cmeta" data-ck="${c.id}">
+          <div class="ctime">${M.race && c.n != null ? `<span class="rchip">R${c.n}</span>` : ""}${when}</div>
+          <div class="ctags ${cls}">${esc(st)}</div>
+          ${nm ? `<div class="cname">${esc(nm)}</div>` : ""}
+          <div class="cact">${acts}<button class="x" type="button" data-del="${c.id}" aria-label="Remove clip filmed ${when}">×</button></div>
+        </div></div>`;
+    });
+    list.innerHTML = html;
+  }
+  const n = ws.clips.length, nSel = ws.sel.size;
+  $("#ws-count").textContent = G.loading ? `Reading ${G.loading} clip${G.loading === 1 ? "" : "s"}…` : (n ? `${n} clip${n === 1 ? "" : "s"}${nSel ? ` · ${nSel} selected` : ""}` : "");
+  $("#ws-selall").hidden = !n;
+  $("#ws-selall").textContent = nSel && nSel === n ? "Clear selection" : "Select all";
+  $("#ws-tag").hidden = !M.tag; $("#ws-race").hidden = !M.race;
+  $("#ws-tag").disabled = !nSel; $("#ws-race").disabled = !nSel;
+  $("#ws-tag").textContent = nSel ? `Tag selected (${nSel})` : "Tag selected";
+  $("#ws-race").textContent = nSel ? `Race number (${nSel})` : "Race number";
+  $("#ws-bar-row").hidden = !M.tag && !M.race;
+  const toBurn = M.burn ? ws.clips.filter(burnable) : [];
+  $("#ws-burn").hidden = !toBurn.length;
+  $("#ws-burn").textContent = toBurn.length > 1 ? `Burn all (${toBurn.length})` : "Burn timer";
+  const toSave = ws.clips.filter(c => ready(c) && !c.saved);
+  const sv = $("#ws-save");
+  sv.classList.toggle("alt", !!toBurn.length);
+  if (ws.pending) { sv.disabled = false; sv.textContent = `Save next batch (${ws.pending.i + 1} of ${ws.pending.batches.length})`; }
+  else { sv.disabled = !toSave.length; sv.textContent = toSave.length ? `Save ${toSave.length} to Files` : "Save to Files"; }
+  let hint = "";
+  if (M.race && !ws.comp && n) hint = "Type the competition name above to build the file names.";
+  else if (n && !toSave.length && !toBurn.length && !ws.pending) hint = M.burn ? "Sync a clip to your watch to burn its timer." : "Tick clips and tag them to save.";
+  $("#ws-hint").textContent = hint; $("#ws-hint").hidden = !hint;
+  $("#ws-bar").hidden = !n;
+}
+$("#ws-list").addEventListener("click", e => {
+  const t = e.target;
+  const del = t.closest("[data-del]"), same = t.closest("[data-same]"), sy = t.closest("[data-sync]"), pv = t.closest("[data-pv]"), ck = t.closest("[data-ck]");
+  const find = id => ws.clips.find(c => c.id === id);
+  if (del) {
+    const c = find(del.dataset.del); if (!c) return;
+    URL.revokeObjectURL(c.url); if (c.thumb) URL.revokeObjectURL(c.thumb);
+    ws.clips = ws.clips.filter(x => x !== c); ws.sel.delete(c.id); ws.pending = null;
+    if (MODES[ws.mode].race) autoNumber(ws);
+    renderWs(); return;
+  }
+  if (same) {
+    const c = find(same.dataset.same), p = c && prevTagged(c); if (!p) return;
+    c.tag = typeof p.tag === "string" ? p.tag : { manoeuvre: p.tag.manoeuvre, sailors: [...p.tag.sailors] };
+    c.cond = p.cond ? { ...p.cond } : null; c.saved = false; ws.pending = null; renderWs(); return;
+  }
+  if (sy) { openSync(find(sy.dataset.sync)); return; }
+  if (pv) { const c = find(pv.dataset.pv); if (c) { $("#pv-vid").src = c.url; $("#pv").hidden = false; $("#pv-vid").play().catch(() => {}); } return; }
+  if (ck) { const id = ck.dataset.ck; if (ws.sel.has(id)) ws.sel.delete(id); else ws.sel.add(id); renderWs(); }
 });
-$("#db-saveall").addEventListener("click", () => {
-  const files = db.clips.filter(c => c.state === "done").map(c => new File([c.out], c.outName, { type: c.out.type }));
-  shareFiles(files);
+$("#ws-selall").addEventListener("click", () => {
+  if (ws.sel.size === ws.clips.length) ws.sel.clear(); else ws.clips.forEach(c => ws.sel.add(c.id));
+  renderWs();
 });
+$("#pv-close").addEventListener("click", () => { const v = $("#pv-vid"); v.pause(); v.removeAttribute("src"); v.load(); $("#pv").hidden = true; });
+
+/* ---- tag / race number panel ---- */
+let tp = null;
+function openPanel(kind){
+  const sel = ws.clips.filter(c => ws.sel.has(c.id)); if (!sel.length) return;
+  tp = { kind, sel };
+  const body = $("#tp-body");
+  if (kind === "race") {
+    tp.n = sel[0].n || ws.raceStart;
+    $("#tp-title").textContent = "Race number";
+    body.innerHTML = `<div class="sec"><div class="lbl">Set race number for ${sel.length} clip${sel.length === 1 ? "" : "s"}</div>
+      <div class="racebox"><div class="race-read"><div class="race-n" id="tp-rn"></div><div class="race-max" id="tp-rmax"></div></div>
+      <div class="ctl"><button class="step" type="button" id="tp-rminus" aria-label="Previous race">−</button>
+      <input type="range" id="tp-rrange" min="1" max="12" step="1" aria-label="Race number">
+      <button class="step" type="button" id="tp-rplus" aria-label="Next race">+</button></div></div>
+      <p class="db-intro">Clips you change here keep their number when the rest is filled in automatically.</p></div>`;
+    const setN = v => { tp.n = Math.max(1, Math.round(v)); const max = Math.max(12, tp.n);
+      $("#tp-rrange").max = max; $("#tp-rrange").value = tp.n; $("#tp-rn").textContent = "R" + tp.n;
+      $("#tp-rmax").textContent = max > 12 ? `Slider 1–${max}` : "Slider 1–12 · + goes higher"; };
+    $("#tp-rrange").addEventListener("input", e => setN(+e.target.value));
+    $("#tp-rminus").addEventListener("click", () => setN(tp.n - 1));
+    $("#tp-rplus").addEventListener("click", () => setN(tp.n + 1));
+    setN(tp.n);
+  } else if (ws.mode === "rmark") {
+    const first = sel.find(c => c.tag); tp.tag = first ? first.tag : null;
+    $("#tp-title").textContent = "Tag clips";
+    body.innerHTML = `<div class="sec"><div class="lbl">Type for ${sel.length} clip${sel.length === 1 ? "" : "s"}</div><div class="chips big" id="tp-man"></div></div>${condBlock()}`;
+    chipRow($("#tp-man"), MARK_TAGS, tp.tag, v => tp.tag = v, false);
+    wireCondBlock();
+  } else {
+    const first = sel.find(c => c.tag);
+    tp.man = first ? first.tag.manoeuvre : null; tp.sailors = first ? [...first.tag.sailors] : [];
+    $("#tp-title").textContent = "Tag clips";
+    body.innerHTML = `<div class="sec"><div class="lbl">Manoeuvre for ${sel.length} clip${sel.length === 1 ? "" : "s"}</div><div class="chips big" id="tp-man"></div></div>
+      <div class="sec" id="tp-crew"><div class="lbl">Sailors</div><div class="crew-pick" id="tp-pick"></div>
+      <div class="pick-note" id="tp-crew-note" hidden>Add sailors on the start screen first.</div></div>${condBlock()}`;
+    chipRow($("#tp-man"), MANS.map(m => [m, m]), tp.man, v => tp.man = v, true);
+    const pick = $("#tp-pick");
+    crew.forEach(s => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "pick"; b.textContent = s.name;
+      b.setAttribute("aria-pressed", String(tp.sailors.includes(s.id)));
+      b.addEventListener("click", () => {
+        tp.sailors = tp.sailors.includes(s.id) ? tp.sailors.filter(x => x !== s.id) : [...tp.sailors, s.id];
+        b.setAttribute("aria-pressed", String(tp.sailors.includes(s.id))); tpRefresh();
+      });
+      pick.appendChild(b);
+    });
+    wireCondBlock();
+  }
+  $("#tp").hidden = false; $("#tp").scrollTop = 0; tpRefresh();
+}
+function condBlock(){
+  return `<div class="sec"><div class="lbl">Conditions</div>
+    <div class="cond-line" style="margin-top:0"><span class="cond-sum"></span><button type="button" id="tp-cond-toggle" aria-expanded="false">Change</button></div>
+    <div class="cond-edit" id="tp-cond-wrap" hidden><div class="cond" id="tp-cond"></div><div class="cond-note">Changes here also update the session preset.</div></div></div>`;
+}
+function wireCondBlock(){
+  buildCond($("#tp-cond")); syncCond();
+  $("#tp-cond-toggle").addEventListener("click", () => {
+    const w = $("#tp-cond-wrap"), open = w.hidden; w.hidden = !open;
+    $("#tp-cond-toggle").textContent = open ? "Done" : "Change"; $("#tp-cond-toggle").setAttribute("aria-expanded", String(open));
+  });
+}
+// chipRow() calls refresh(); make it also refresh the panel
+const _refresh = refresh;
+refresh = function(){ _refresh(); tpRefresh(); };
+function tpRefresh(){
+  if (!tp || $("#tp").hidden) return;
+  let hint = "";
+  if (tp.kind === "tag" && ws.mode === "train") {
+    const needS = tp.man && !NO_SAILORS.has(tp.man);
+    $("#tp-crew").hidden = !needS;
+    $("#tp-crew-note").hidden = crew.length > 0;
+    if (!tp.man) hint = "Pick the manoeuvre";
+    else if (needS && !tp.sailors.some(id => crew.some(s => s.id === id))) hint = "Pick at least one sailor";
+  } else if (tp.kind === "tag" && !tp.tag) hint = "Pick Top mark or Bottom mark";
+  $("#tp-hint").textContent = hint; $("#tp-hint").hidden = !hint;
+  const n = tp.sel.length;
+  $("#tp-apply").disabled = !!hint;
+  $("#tp-apply").textContent = `Apply to ${n} clip${n === 1 ? "" : "s"}`;
+}
+$("#ws-tag").addEventListener("click", () => openPanel("tag"));
+$("#ws-race").addEventListener("click", () => openPanel("race"));
+$("#tp-cancel").addEventListener("click", () => { $("#tp").hidden = true; tp = null; });
+$("#tp-apply").addEventListener("click", () => {
+  if (!tp || $("#tp-apply").disabled) return;
+  tp.sel.forEach(c => {
+    if (tp.kind === "race") { c.n = tp.n; c.raceManual = true; }
+    else if (ws.mode === "rmark") { c.tag = tp.tag; c.cond = { ...cond }; }
+    else { c.tag = { manoeuvre: tp.man, sailors: NO_SAILORS.has(tp.man) ? [] : tp.sailors.filter(id => crew.some(s => s.id === id)) }; c.cond = { ...cond }; }
+    c.saved = false;
+  });
+  saveCond();
+  const n = tp.sel.length;
+  ws.sel.clear(); ws.pending = null; $("#tp").hidden = true; tp = null; renderWs();
+  toast(`Updated ${n} clip${n === 1 ? "" : "s"}`);
+});
+
+/* ---- saving (in batches the share sheet can handle) ---- */
 async function shareFiles(files){
   if (navigator.canShare && navigator.canShare({ files })) {
-    try { await navigator.share({ files }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.share({ files }); return true; }
+    catch (e) { if (e && e.name === "AbortError") return false; }
   }
-  files.forEach(f => { const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000); });
+  try {
+    files.forEach(f => { const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000); });
+    return true;
+  } catch { toast("Couldn’t save on this device"); return false; }
 }
+function makeBatches(items){
+  const out = []; let cur = [], size = 0;
+  items.forEach(it => {
+    if (cur.length && (cur.length >= 10 || size + it.f.size > 1.5e9)) { out.push(cur); cur = []; size = 0; }
+    cur.push(it); size += it.f.size;
+  });
+  if (cur.length) out.push(cur);
+  return out;
+}
+$("#ws-save").addEventListener("click", async () => {
+  if (!ws.pending) {
+    const list = ws.clips.filter(c => ready(c) && !c.saved);
+    if (!list.length) return;
+    const items = list.map(c => ({ c, f: c.out ? new File([c.out], nameFor(c), { type: c.out.type })
+                                             : new File([c.file], nameFor(c), { type: c.file.type || "video/quicktime" }) }));
+    ws.pending = { batches: makeBatches(items), i: 0 };
+  }
+  const P = ws.pending, batch = P.batches[P.i];
+  const ok = await shareFiles(batch.map(x => x.f));
+  if (ok) {
+    batch.forEach(x => x.c.saved = true); P.i++;
+    if (P.i >= P.batches.length) { ws.pending = null; toast("All tagged clips saved"); }
+    else toast(`Batch ${P.i} saved. Tap again for the next one.`);
+  } else toast("Not saved yet – tap Save again");
+  renderWs();
+});
 
-/* ---- sync editor ---- */
+/* ---- sync editor (watch / start signal) ---- */
 const vid = $("#db-vid");
 function layoutStage(){
   const st = $("#db-stage"); if (!vid.videoWidth) return;
@@ -826,15 +1186,15 @@ function layoutStage(){
   const short = Math.min(w, w / ar), t = $("#db-timer");
   t.style.fontSize = (short * 0.075) + "px"; t.style.top = t.style.right = (short * 0.035) + "px";
 }
+let scrubbing = false, rafId = 0, replayEnd = null, soundOn = true;
 function drawPreview(){
-  const c = db.cur; if (!c) return;
+  const c = G.cur; if (!c) return;
   $("#db-cur").textContent = fmtPos(vid.currentTime);
   if (!scrubbing) $("#db-scrub").value = vid.currentTime;
   const t = $("#db-timer");
   t.hidden = c.gun == null;
   if (c.gun != null) { t.textContent = timerText(vid.currentTime, c.gun); t.classList.toggle("after", vid.currentTime >= c.gun); }
 }
-let scrubbing = false, rafId = 0, replayEnd = null, soundOn = true;
 function tick(){
   if (replayEnd != null && vid.currentTime >= replayEnd) { const e = replayEnd; replayEnd = null; vid.pause(); vid.currentTime = e; }
   drawPreview(); if (!vid.paused) rafId = requestAnimationFrame(tick);
@@ -848,12 +1208,13 @@ $("#db-replay").addEventListener("click", () => {
 });
 function openSync(c){
   if (!c) return;
-  db.cur = c; $("#db-title").textContent = "Watch sync";
+  G.cur = c; $("#db-title").textContent = "Watch sync";
   $("#db-err").hidden = true; $("#db-watch").value = ""; replayEnd = null;
   vid.muted = !soundOn; applySide();
   vid.src = c.url; vid.currentTime = 0;
   vid.onloadedmetadata = () => { c.duration = vid.duration; $("#db-scrub").max = vid.duration; $("#db-dur").textContent = "/ " + fmtPos(vid.duration); layoutStage(); drawPreview(); };
-  renderGun(); showDb("sync");
+  renderGun();
+  $("#db-listview").hidden = true; $("#db-syncview").hidden = false; $("#db-burnview").hidden = true; $("#db").scrollTop = 0;
 }
 vid.addEventListener("timeupdate", drawPreview);
 vid.addEventListener("seeked", drawPreview);
@@ -867,27 +1228,28 @@ document.querySelectorAll(".db-steps [data-step]").forEach(b => b.addEventListen
 $("#db-scrub").addEventListener("input", e => { scrubbing = true; replayEnd = null; vid.pause(); vid.currentTime = +e.target.value; $("#db-cur").textContent = fmtPos(+e.target.value); });
 $("#db-scrub").addEventListener("change", () => { scrubbing = false; });
 $("#db-seg").addEventListener("click", e => {
-  const b = e.target.closest("[data-v]"); if (!b) return; db.side = b.dataset.v;
+  const b = e.target.closest("[data-v]"); if (!b) return; G.side = b.dataset.v;
   $("#db-seg").querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   applySide();
 });
 function applySide(){
-  const gun = db.side === "gun", w = $("#db-watch");
+  const gun = G.side === "gun", w = $("#db-watch");
   w.disabled = gun; if (gun) w.value = "";
   w.placeholder = gun ? "0:00" : "2:47";
   $("#db-sync-lbl").textContent = gun ? "The start signal is at this frame" : "At this frame your watch shows";
   $("#db-err").hidden = true;
 }
+function clipChanged(c){ if (c.out) { c.out = null; } c.saved = false; c.state = "new"; ws.pending = null; }
 $("#db-dosync").addEventListener("click", () => {
-  const secs = db.side === "gun" ? 0 : parseWatch($("#db-watch").value), err = $("#db-err");
+  const secs = G.side === "gun" ? 0 : parseWatch($("#db-watch").value), err = $("#db-err");
   if (secs == null) { err.textContent = "Type the watch time as minutes and seconds, e.g. 2:47 or 247."; err.hidden = false; return; }
   err.hidden = true;
-  const c = db.cur; c.gun = vid.currentTime + (db.side === "before" ? secs : -secs);
-  if (c.state === "done") { c.state = "new"; c.out = null; }
+  const c = G.cur; c.gun = vid.currentTime + (G.side === "after" ? -secs : secs); c.cond = { ...cond };
+  clipChanged(c);
   $("#db-watch").blur(); renderGun(); drawPreview();
 });
 function renderGun(){
-  const c = db.cur, box = $("#db-gun");
+  const c = G.cur, box = $("#db-gun");
   box.hidden = !c || c.gun == null; if (box.hidden) return;
   const outside = c.duration && (c.gun < 0 || c.gun > c.duration);
   $("#db-gun-at").textContent = outside
@@ -895,16 +1257,16 @@ function renderGun(){
     : `Gun at ${fmtPos(c.gun)} in the video`;
   $("#db-jump").disabled = outside;
 }
-$("#db-jump").addEventListener("click", () => { vid.pause(); vid.currentTime = Math.max(0, db.cur.gun); });
+$("#db-jump").addEventListener("click", () => { vid.pause(); vid.currentTime = Math.max(0, G.cur.gun); });
 document.querySelectorAll("[data-nudge]").forEach(b => b.addEventListener("click", () => {
-  const c = db.cur; if (c.gun == null) return;
+  const c = G.cur; if (c.gun == null) return;
   c.gun = Math.round((c.gun + +b.dataset.nudge) * 1000) / 1000;
-  if (c.state === "done") { c.state = "new"; c.out = null; }
+  clipChanged(c);
   renderGun(); vid.pause(); vid.currentTime = Math.max(0, c.gun); drawPreview();
 }));
-$("#db-done").addEventListener("click", () => { db.cur = null; showDb("list"); });
+$("#db-done").addEventListener("click", () => { G.cur = null; showDb("list"); });
 
-/* ---- burning ---- */
+/* ---- burning the timer in ---- */
 let bVid = null, aCtx = null, aDest = null, wakeLock = null;
 function pickMime(){
   if (!window.MediaRecorder) return null;
@@ -945,21 +1307,17 @@ function needTap(text){
   });
 }
 async function playBurner(){
-  for (;;) {
-    try { await bVid.play(); return; }
-    catch (e) { await needTap("Tap to continue burning"); }
-  }
+  for (;;) { try { await bVid.play(); return; } catch (e) { await needTap("Tap to continue burning"); } }
 }
 $("#bn-resume").addEventListener("click", () => {
   if (aCtx && aCtx.state !== "running") aCtx.resume().catch(() => {});
   bVid && bVid.play().catch(() => {});
   if (resumeWaiter) resumeWaiter();
 });
-
 function burnClip(c, onProg, ctl){
   return new Promise(async (resolve, reject) => {
     try {
-      if (bVid.src !== c.url) { bVid.src = c.url; }
+      if (bVid.src !== c.url) bVid.src = c.url;
       if (bVid.readyState < 1) await waitEvt(bVid, "loadedmetadata", 15000);
       const W0 = bVid.videoWidth, H0 = bVid.videoHeight, dur = bVid.duration;
       if (!W0 || !isFinite(dur)) throw new Error("This video can’t be read on this device.");
@@ -988,11 +1346,11 @@ function burnClip(c, onProg, ctl){
       const onHide = () => {
         if (document.hidden && !finished && !bVid.paused) {
           bVid.pause(); try { rec.pause(); } catch {}
-          needTap("Tap to continue burning").then(() => { try { rec.resume(); } catch {} ; playBurner(); });
+          needTap("Tap to continue burning").then(() => { try { rec.resume(); } catch {} playBurner(); });
         }
       };
       document.addEventListener("visibilitychange", onHide);
-      ctl.cancel = () => { finished = true; bVid.pause(); try { rec.stop(); } catch {} ; document.removeEventListener("visibilitychange", onHide); reject(new Error("cancelled")); };
+      ctl.cancel = () => { finished = true; bVid.pause(); try { rec.stop(); } catch {} document.removeEventListener("visibilitychange", onHide); reject(new Error("cancelled")); };
       rec.start(1000);
       await playBurner();
       loop();
@@ -1007,25 +1365,23 @@ function burnClip(c, onProg, ctl){
     } catch (e) { reject(e); }
   });
 }
-
-$("#db-burn").addEventListener("click", () => {
-  const queue = db.clips.filter(c => c.gun != null && c.state !== "done");
-  if (!queue.length || db.running) return;
+$("#ws-burn").addEventListener("click", () => {
+  const queue = ws.clips.filter(burnable);
+  if (!queue.length || G.running) return;
   if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { toast("This browser can’t burn videos. Update iOS, or use Safari or Chrome on a laptop."); return; }
-  // Unlock audio + playback inside this tap (iOS only allows it from a tap).
-  ensureBurner();
+  ensureBurner();                       // unlock audio + playback inside this tap (iOS needs a tap)
   if (aCtx) aCtx.resume().catch(() => {});
   bVid.src = queue[0].url;
   bVid.play().then(() => bVid.pause()).catch(() => {});
   runBurn(queue);
 });
 async function runBurn(queue){
-  db.running = true; showDb("burn");
+  G.running = true; showDb("burn");
   try { if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request("screen"); } catch {}
   const total = queue.reduce((s, c) => s + (c.duration || 0), 0) || 1;
   let doneSecs = 0, cancelled = false;
   const ctl = {};
-  db.cancel = () => { cancelled = true; ctl.cancel && ctl.cancel(); };
+  G.cancel = () => { cancelled = true; ctl.cancel && ctl.cancel(); };
   for (let i = 0; i < queue.length && !cancelled; i++) {
     const c = queue[i];
     $("#bn-name").textContent = c.name;
@@ -1036,15 +1392,12 @@ async function runBurn(queue){
       const p = d ? Math.min(1, t / d) : 0;
       $("#bn-bar").style.width = (p * 100).toFixed(1) + "%";
       const left = (d - t) + queue.slice(i + 1).reduce((s, x) => s + (x.duration || 0), 0);
-      const mins = Math.ceil(left / 60);
-      $("#bn-meta").innerHTML = `${Math.floor(p * 100)}%<small>${left < 60 ? "under a minute left" : `about ${mins} min left`}</small>`;
+      $("#bn-meta").innerHTML = `${Math.floor(p * 100)}%<small>${left < 60 ? "under a minute left" : `about ${Math.ceil(left / 60)} min left`}</small>`;
       $("#bn-obar").style.width = (Math.min(1, (doneSecs + t) / total) * 100).toFixed(1) + "%";
     };
     prog(0, c.duration || 1);
     try {
-      const blob = await burnClip(c, prog, ctl);
-      const ext = blob.type.includes("webm") ? "webm" : "mp4";
-      c.out = blob; c.outName = c.name.replace(/\.[^.]+$/, "") + "_timer." + ext; c.state = "done";
+      c.out = await burnClip(c, prog, ctl); c.state = "done"; c.saved = false;
     } catch (e) {
       if (e && e.message === "cancelled") { c.state = "new"; break; }
       c.state = "error"; c.err = (e && e.message) || "Burning failed. Try again.";
@@ -1053,15 +1406,15 @@ async function runBurn(queue){
   }
   try { wakeLock && await wakeLock.release(); } catch {} wakeLock = null;
   $("#bn-resume").hidden = true; resumeWaiter = null;
-  db.running = false; db.cancel = null;
+  G.running = false; G.cancel = null; ws.pending = null;
   showDb("list");
-  const n = db.clips.filter(c => c.state === "done").length;
+  const n = ws.clips.filter(c => c.out && !c.saved).length;
   if (cancelled) toast(n ? "Cancelled. Finished clips are ready to save." : "Cancelled");
-  else toast(n ? "Done. Tap Save to Files for each clip." : "Nothing was burned");
+  else toast(n ? "Done. Tap Save to Files." : "Nothing was burned");
 }
-$("#bn-cancel").addEventListener("click", () => { if (db.cancel) db.cancel(); if (resumeWaiter) resumeWaiter(); });
+$("#bn-cancel").addEventListener("click", () => { if (G.cancel) G.cancel(); if (resumeWaiter) resumeWaiter(); });
 document.addEventListener("visibilitychange", async () => {
-  if (!document.hidden && db.running && navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request("screen"); } catch {} }
+  if (!document.hidden && G.running && navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request("screen"); } catch {} }
 });
 
 // Block pinch and double-tap zoom (iOS ignores user-scalable=no in some cases).
