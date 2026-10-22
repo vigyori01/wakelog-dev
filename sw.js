@@ -1,5 +1,5 @@
 // Wake Log offline cache. Bump VERSION when any file changes so phones pick up the update.
-const VERSION = "wakelog-v7";
+const VERSION = "wakelog-v8";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
